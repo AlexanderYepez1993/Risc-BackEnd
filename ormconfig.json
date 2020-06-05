@@ -1,0 +1,10 @@
+{
+    "type": "mssql",
+    "host": "localhost",
+    "port": 1433,
+    "username": "sa",
+    "password": "P4ssw0rd",
+    "database": "risc_2030",
+    "entities": ["dist/entity/**/*.js"],
+    "synchronize": true
+ }
