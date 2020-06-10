@@ -47,9 +47,9 @@ var Usuarios_Risc = /** @class */ (function () {
         __metadata("design:type", String)
     ], Usuarios_Risc.prototype, "tipo_ambito", void 0);
     __decorate([
-        typeorm_1.Column({ type: "int", nullable: false }),
-        __metadata("design:type", Number)
-    ], Usuarios_Risc.prototype, "codigo_ambito", void 0);
+        typeorm_1.Column({ type: "varchar", length: 200, nullable: false }),
+        __metadata("design:type", String)
+    ], Usuarios_Risc.prototype, "descripcion_ambito", void 0);
     Usuarios_Risc = __decorate([
         typeorm_1.Entity()
     ], Usuarios_Risc);

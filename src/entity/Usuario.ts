@@ -18,6 +18,6 @@ export class Usuarios_Risc{
     nombres: string;
     @Column({type: "varchar", length: 200, nullable: false})
     tipo_ambito: string;
-    @Column({type: "int", nullable: false})
-    codigo_ambito: number;
+    @Column({type: "varchar", length: 200, nullable: false})
+    descripcion_ambito: string;
 }
