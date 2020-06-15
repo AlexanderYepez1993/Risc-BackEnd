@@ -35,10 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarUsuario = exports.actualizarUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = void 0;
+exports.eliminarUsuario = exports.actualizarUsuario = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = void 0;
 var typeorm_1 = require("typeorm");
 var Usuario_1 = require("../entity/Usuario");
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var bcryptjs_1 = __importDefault(require("bcryptjs"));
+var SECRET_KEY = 'SecretKeyRISC';
 exports.obtenerUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var usuarios;
     return __generator(this, function (_a) {
@@ -54,7 +60,7 @@ exports.obtenerUsuario = function (req, res) { return __awaiter(void 0, void 0, 
     var resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.id)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.dni)];
             case 1:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
@@ -62,15 +68,83 @@ exports.obtenerUsuario = function (req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nuevoUsuario, resultados;
+    var nuevoUsuario, newUser, usuarioExistente, resultados, expiresIn, accessToken, dataUser, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                nuevoUsuario = typeorm_1.getRepository(Usuario_1.Usuarios_Risc).create(req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).save(nuevoUsuario)];
+                _a.trys.push([0, 5, , 6]);
+                nuevoUsuario = {
+                    dni: req.body.dni,
+                    password: bcryptjs_1.default.hashSync(req.body.password),
+                    email: req.body.email,
+                    apellido_paterno: req.body.apellido_paterno,
+                    apellido_materno: req.body.apellido_materno,
+                    nombres: req.body.nombres,
+                    tipo_ambito: req.body.tipo_ambito,
+                    descripcion_ambito: req.body.descripcion_ambito
+                };
+                newUser = typeorm_1.getRepository(Usuario_1.Usuarios_Risc).create(nuevoUsuario);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne({ where: { dni: newUser.dni } })];
             case 1:
+                usuarioExistente = _a.sent();
+                if (!((usuarioExistente === null || usuarioExistente === void 0 ? void 0 : usuarioExistente.dni) == newUser.dni)) return [3 /*break*/, 2];
+                return [2 /*return*/, res.status(409).send({ message: 'USUARIO YA EXISTE' })];
+            case 2: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).save(newUser)];
+            case 3:
                 resultados = _a.sent();
-                return [2 /*return*/, res.json(resultados)];
+                expiresIn = 30 * 60;
+                accessToken = jsonwebtoken_1.default.sign({ resultados: resultados }, SECRET_KEY, { expiresIn: expiresIn });
+                dataUser = {
+                    dni: resultados.dni,
+                    email: resultados.email,
+                    accessToken: accessToken,
+                    expiresIn: expiresIn
+                };
+                return [2 /*return*/, res.json(dataUser)];
+            case 4: return [3 /*break*/, 6];
+            case 5:
+                err_1 = _a.sent();
+                return [2 /*return*/, res.status(409).send({ message: 'USUARIO YA EXISTE' })];
+            case 6: return [2 /*return*/];
+        }
+    });
+}); };
+exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userData, resultPassword, expiresIn, accessToken, dataUser, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne({ where: { dni: req.body.dni } })];
+            case 1:
+                userData = _a.sent();
+                if (!userData) {
+                    //DNI NO PERTENECE A NINGÚN USUARIO
+                    return [2 /*return*/, res.status(409).send({ message: 'VERIDICAR SU USUARIO Y/O CONTRASEÑA' })];
+                }
+                else {
+                    resultPassword = bcryptjs_1.default.compare(userData.password, req.body.password);
+                    if (resultPassword) {
+                        expiresIn = 30 * 60;
+                        accessToken = jsonwebtoken_1.default.sign({ userData: userData }, SECRET_KEY, { expiresIn: expiresIn });
+                        dataUser = {
+                            dni: userData.dni,
+                            email: userData.email,
+                            accessToken: accessToken,
+                            expiresIn: expiresIn
+                        };
+                        return [2 /*return*/, res.send({ dataUser: dataUser })];
+                    }
+                    else {
+                        //CONTRASEÑA INCORRECTA
+                        return [2 /*return*/, res.status(409).send({ message: 'VERIDICAR SU USUARIO Y/O CONTRASEÑA' })];
+                    }
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _a.sent();
+                return [2 /*return*/, res.status(409).send({ message: 'VERIDICAR SU USUARIO Y/O CONTRASEÑA' })];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -78,7 +152,7 @@ exports.actualizarUsuario = function (req, res) { return __awaiter(void 0, void 
     var usuario, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.id)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.dni)];
             case 1:
                 usuario = _a.sent();
                 if (!usuario) return [3 /*break*/, 3];
@@ -95,11 +169,11 @@ exports.eliminarUsuario = function (req, res) { return __awaiter(void 0, void 0,
     var usuario, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.id)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.dni)];
             case 1:
                 usuario = _a.sent();
                 if (!usuario) return [3 /*break*/, 3];
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).delete(req.params.id)];
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).delete(req.params.dni)];
             case 2:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];

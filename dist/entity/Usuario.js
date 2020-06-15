@@ -15,11 +15,7 @@ var Usuarios_Risc = /** @class */ (function () {
     function Usuarios_Risc() {
     }
     __decorate([
-        typeorm_1.PrimaryGeneratedColumn({ type: "int" }),
-        __metadata("design:type", Number)
-    ], Usuarios_Risc.prototype, "id_usuarios_risc", void 0);
-    __decorate([
-        typeorm_1.Column({ type: "varchar", length: 8, nullable: false }),
+        typeorm_1.PrimaryColumn({ type: "varchar", length: 8 }),
         __metadata("design:type", String)
     ], Usuarios_Risc.prototype, "dni", void 0);
     __decorate([

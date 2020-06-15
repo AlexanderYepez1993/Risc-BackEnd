@@ -1,10 +1,8 @@
-import {Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
+import {Entity, Column, PrimaryColumn} from 'typeorm';
 
 @Entity()
 export class Usuarios_Risc{
-    @PrimaryGeneratedColumn({ type: "int" })
-    id_usuarios_risc: number;
-    @Column({type: "varchar", length: 8, nullable: false})
+    @PrimaryColumn({type: "varchar", length: 8})
     dni: string;
     @Column({type: "varchar", length: 16, nullable: false})
     password: string;
