@@ -26,9 +26,10 @@
         "@nestjs/core": "^7.0.0",
         "@nestjs/platform-express": "^7.0.0",
         "bcryptjs": "^2.4.3",
-        "body-parser": "^1.19.0",
+        "class-validator": "^0.12.2",
         "cors": "^2.8.5",
         "express": "^4.17.1",
+        "express-jwt": "^5.3.3",
         "jsonwebtoken": "^8.5.1",
         "morgan": "^1.10.0",
         "mssql": "^5.1.1",
@@ -42,9 +43,11 @@
         "@nestjs/cli": "^7.0.0",
         "@nestjs/schematics": "^7.0.0",
         "@nestjs/testing": "^7.0.0",
+        "@types/bcryptjs": "^2.4.2",
         "@types/cors": "^2.8.6",
         "@types/express": "^4.17.6",
         "@types/jest": "25.1.4",
+        "@types/jsonwebtoken": "^8.5.0",
         "@types/morgan": "^1.9.0",
         "@types/node": "^13.13.9",
         "@types/supertest": "^2.0.8",
@@ -54,12 +57,12 @@
         "eslint-config-prettier": "^6.10.0",
         "eslint-plugin-import": "^2.20.1",
         "jest": "^25.1.0",
-        "nodemon": "^2.0.4",
         "prettier": "^1.19.1",
         "supertest": "^4.0.2",
         "ts-jest": "25.2.1",
         "ts-loader": "^6.2.1",
         "ts-node": "^8.6.2",
+        "ts-node-dev": "^1.0.0-pre.44",
         "tsc-watch": "^4.2.8",
         "tsconfig-paths": "^3.9.0",
         "typescript": "^3.9.3"
@@ -75,7 +78,62 @@
         "transform": {
             "^.+\\.(t|j)s$": "ts-jest"
         },
-        "coverageDirectory": "../coverage",
-        "testEnvironment": "node"
+        "dependencies": {
+            "@nestjs/common": "^7.0.0",
+            "@nestjs/core": "^7.0.0",
+            "@nestjs/platform-express": "^7.0.0",
+            "bcryptjs": "^2.4.3",
+            "body-parser": "^1.19.0",
+            "cors": "^2.8.5",
+            "express": "^4.17.1",
+            "jsonwebtoken": "^8.5.1",
+            "morgan": "^1.10.0",
+            "mssql": "^5.1.1",
+            "nestjs": "0.0.1",
+            "reflect-metadata": "^0.1.13",
+            "rimraf": "^3.0.2",
+            "rxjs": "^6.5.4",
+            "typeorm": "^0.2.25"
+        },
+        "devDependencies": {
+            "@nestjs/cli": "^7.0.0",
+            "@nestjs/schematics": "^7.0.0",
+            "@nestjs/testing": "^7.0.0",
+            "@types/cors": "^2.8.6",
+            "@types/express": "^4.17.6",
+            "@types/jest": "25.1.4",
+            "@types/morgan": "^1.9.0",
+            "@types/node": "^13.13.9",
+            "@types/supertest": "^2.0.8",
+            "@typescript-eslint/eslint-plugin": "^2.23.0",
+            "@typescript-eslint/parser": "^2.23.0",
+            "eslint": "^6.8.0",
+            "eslint-config-prettier": "^6.10.0",
+            "eslint-plugin-import": "^2.20.1",
+            "jest": "^25.1.0",
+            "nodemon": "^2.0.4",
+            "prettier": "^1.19.1",
+            "supertest": "^4.0.2",
+            "ts-jest": "25.2.1",
+            "ts-loader": "^6.2.1",
+            "ts-node": "^8.6.2",
+            "tsc-watch": "^4.2.8",
+            "tsconfig-paths": "^3.9.0",
+            "typescript": "^3.9.3"
+        },
+        "jest": {
+            "moduleFileExtensions": [
+                "js",
+                "json",
+                "ts"
+            ],
+            "rootDir": "src",
+            "testRegex": ".spec.ts$",
+            "transform": {
+                "^.+\\.(t|j)s$": "ts-jest"
+            },
+            "coverageDirectory": "../coverage",
+            "testEnvironment": "node"
+        }
     }
 }
