@@ -97,6 +97,8 @@ exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                 dataUser = {
                     dni: resultados.dni,
                     email: resultados.email,
+                    tipo_ambito: resultados.tipo_ambito,
+                    descripcion_ambito: resultados.descripcion_ambito,
                     accessToken: accessToken,
                     expiresIn: expiresIn
                 };
@@ -130,6 +132,8 @@ exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                         dataUser = {
                             dni: userData.dni,
                             email: userData.email,
+                            tipo_ambito: userData.tipo_ambito,
+                            descripcion_ambito: userData.descripcion_ambito,
                             accessToken: accessToken,
                             expiresIn: expiresIn
                         };
