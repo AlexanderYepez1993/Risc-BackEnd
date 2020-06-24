@@ -39,17 +39,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarUsuario = exports.actualizarUsuario = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = void 0;
+exports.eliminarUsuario = exports.actualizarUsuario = exports.actualizarPassword = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = void 0;
 var typeorm_1 = require("typeorm");
 var Usuario_1 = require("../entity/Usuario");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
+var mssql = require('mssql');
+var dotenv = require('dotenv');
+dotenv.config();
+var cadena_conexion = process.env.conexion;
 var SECRET_KEY = "SecretKeyRISC";
+exports.obtenerDescripcionAmbito = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var conexion, script, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 1:
+                conexion = _a.sent();
+                script = "EXEC DEVOLVER_DESCRIPCION_AMBITO '" + req.body.tipo_ambito_usuario + "' , '" + req.body.descripcion_ambito_usuario + "' , '" + req.body.tipo_ambito_crear + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 2:
+                resultados = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.send(resultados.recordset)];
+        }
+    });
+}); };
+exports.obtenerTipoAmbito = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var conexion, script, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 1:
+                conexion = _a.sent();
+                script = "EXEC DEVOLVER_AMBITO " + req.params.tipo_ambito;
+                return [4 /*yield*/, mssql.query(script)];
+            case 2:
+                resultados = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.send(resultados.recordset)];
+        }
+    });
+}); };
 exports.obtenerUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var usuarios;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).find()];
             case 1:
                 usuarios = _a.sent();
                 return [2 /*return*/, res.json(usuarios)];
@@ -60,7 +96,7 @@ exports.obtenerUsuario = function (req, res) { return __awaiter(void 0, void 0, 
     var resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.dni)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
             case 1:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
@@ -81,16 +117,16 @@ exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                     nombres: req.body.nombres,
                     tipo_ambito: req.body.tipo_ambito,
                     descripcion_ambito: req.body.descripcion_ambito,
+                    estado: req.body.estado,
+                    isLogged: req.body.isLogged,
                 };
-                newUser = typeorm_1.getRepository(Usuario_1.Usuarios_Risc).create(nuevoUsuario);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne({
-                        where: { dni: nuevoUsuario.dni },
-                    })];
+                newUser = typeorm_1.getRepository(Usuario_1.USUARIOSRISC).create(nuevoUsuario);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({ where: { dni: nuevoUsuario.dni }, })];
             case 1:
                 usuarioExistente = _a.sent();
                 if (!((nuevoUsuario === null || nuevoUsuario === void 0 ? void 0 : nuevoUsuario.dni) == (usuarioExistente === null || usuarioExistente === void 0 ? void 0 : usuarioExistente.dni))) return [3 /*break*/, 2];
-                return [2 /*return*/, res.status(409).send({ message: "USUARIO YA EXISTE" })];
-            case 2: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).save(newUser)];
+                return [2 /*return*/, res.status(409).send({ message: "EL USUARIO YA EXISTE" })];
+            case 2: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).save(newUser)];
             case 3:
                 userData = _a.sent();
                 expiresIn = 30 * 60;
@@ -104,6 +140,7 @@ exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                     descripcion_ambito: userData.descripcion_ambito,
                     accessToken: accessToken,
                     expiresIn: expiresIn,
+                    estado: userData.estado,
                 };
                 return [2 /*return*/, res.json(dataUser)];
         }
@@ -115,7 +152,7 @@ exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne({
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({
                         where: { dni: req.body.dni },
                     })];
             case 1:
@@ -127,36 +164,68 @@ exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                             .send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
                 }
                 else {
-                    resultPassword = bcryptjs_1.default.compare(userData.password, req.body.password);
-                    if (resultPassword) {
-                        expiresIn = 30 * 60;
-                        accessToken = jsonwebtoken_1.default.sign({ userData: userData }, SECRET_KEY, {
-                            expiresIn: expiresIn,
-                        });
-                        dataUser = {
-                            dni: userData.dni,
-                            email: userData.email,
-                            tipo_ambito: userData.tipo_ambito,
-                            descripcion_ambito: userData.descripcion_ambito,
-                            accessToken: accessToken,
-                            expiresIn: expiresIn,
-                        };
-                        return [2 /*return*/, res.send({ dataUser: dataUser })];
+                    if (userData.estado == "INACTIVO") {
+                        return [2 /*return*/, res.status(409).send({ message: "EL USUARIO NO SE ENCUENTRA ACTIVO" })];
                     }
                     else {
-                        //CONTRASEÑA INCORRECTA
-                        return [2 /*return*/, res
-                                .status(409)
-                                .send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
+                        if (userData.isLogged == "1") {
+                            return [2 /*return*/, res.status(409).send({ message: "EL USUARIO YA SE ENCUENTRA LOGEADO" })];
+                        }
+                        else {
+                            resultPassword = bcryptjs_1.default.compareSync(req.body.password, userData.password);
+                            if (resultPassword) {
+                                if (req.body.dni == req.body.password) {
+                                    return [2 /*return*/, res.status(409).send({ message: "ACTUALIZAR CONTRASEÑA" })];
+                                }
+                                else {
+                                    expiresIn = 30 * 60;
+                                    accessToken = jsonwebtoken_1.default.sign({ userData: userData }, SECRET_KEY, {
+                                        expiresIn: expiresIn,
+                                    });
+                                    dataUser = {
+                                        dni: userData.dni,
+                                        email: userData.email,
+                                        tipo_ambito: userData.tipo_ambito,
+                                        descripcion_ambito: userData.descripcion_ambito,
+                                        estado: userData.estado,
+                                        accessToken: accessToken,
+                                        expiresIn: expiresIn,
+                                    };
+                                    return [2 /*return*/, res.send({ dataUser: dataUser })];
+                                }
+                            }
+                            else {
+                                //CONTRASEÑA INCORRECTA
+                                return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
+                            }
+                        }
                     }
                 }
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();
-                return [2 /*return*/, res
-                        .status(409)
-                        .send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
+                return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
             case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.actualizarPassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var usuario, datoRecibido, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
+            case 1:
+                usuario = _a.sent();
+                datoRecibido = {
+                    password: bcryptjs_1.default.hashSync(req.body.password),
+                };
+                if (!usuario) return [3 /*break*/, 3];
+                typeorm_1.getRepository(Usuario_1.USUARIOSRISC).merge(usuario, datoRecibido);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).save(usuario)];
+            case 2:
+                resultados = _a.sent();
+                return [2 /*return*/, res.json(resultados)];
+            case 3: return [2 /*return*/, res.status(404).json({ msg: "USUARIO NO ENCONTRADO" })];
         }
     });
 }); };
@@ -164,12 +233,12 @@ exports.actualizarUsuario = function (req, res) { return __awaiter(void 0, void 
     var usuario, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.dni)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
             case 1:
                 usuario = _a.sent();
                 if (!usuario) return [3 /*break*/, 3];
-                typeorm_1.getRepository(Usuario_1.Usuarios_Risc).merge(usuario, req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).save(usuario)];
+                typeorm_1.getRepository(Usuario_1.USUARIOSRISC).merge(usuario, req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).save(usuario)];
             case 2:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
@@ -181,11 +250,11 @@ exports.eliminarUsuario = function (req, res) { return __awaiter(void 0, void 0,
     var usuario, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).findOne(req.params.dni)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
             case 1:
                 usuario = _a.sent();
                 if (!usuario) return [3 /*break*/, 3];
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.Usuarios_Risc).delete(req.params.dni)];
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).delete(req.params.dni)];
             case 2:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
