@@ -219,13 +219,14 @@ exports.actualizarPassword = function (req, res) { return __awaiter(void 0, void
                 datoRecibido = {
                     password: bcryptjs_1.default.hashSync(req.body.password),
                 };
-                if (!usuario) return [3 /*break*/, 3];
+                if (!(usuario == undefined)) return [3 /*break*/, 2];
+                return [2 /*return*/, res.status(409).send({ message: "DNI NO PERTENECE A NINGUN USUARIO" })];
+            case 2:
                 typeorm_1.getRepository(Usuario_1.USUARIOSRISC).merge(usuario, datoRecibido);
                 return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).save(usuario)];
-            case 2:
+            case 3:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
-            case 3: return [2 /*return*/, res.status(404).json({ msg: "USUARIO NO ENCONTRADO" })];
         }
     });
 }); };

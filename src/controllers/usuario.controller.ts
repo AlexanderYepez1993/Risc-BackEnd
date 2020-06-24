@@ -127,12 +127,13 @@ export const actualizarPassword = async (req: Request, res: Response): Promise<R
   const datoRecibido = {
     password: bycrypt.hashSync(req.body.password),
   }
-  if (usuario) {
+  if (usuario == undefined) {
+    return res.status(409).send({ message: "DNI NO PERTENECE A NINGUN USUARIO" });
+  } else {
     getRepository(USUARIOSRISC).merge(usuario, datoRecibido);
     const resultados = await getRepository(USUARIOSRISC).save(usuario);
     return res.json(resultados);
   }
-  return res.status(404).json({ msg: "USUARIO NO ENCONTRADO" });
 };
 
 export const actualizarUsuario = async (req: Request, res: Response): Promise<Response> => {
