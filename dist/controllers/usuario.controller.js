@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarUsuario = exports.actualizarUsuario = exports.actualizarPassword = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = void 0;
+exports.eliminarUsuario = exports.actualizarUsuario = exports.actualizarPassword = exports.validarPassword = exports.validarDni = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerIdPunto = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = exports.obtenerListaUsuarios = void 0;
 var typeorm_1 = require("typeorm");
 var Usuario_1 = require("../entity/Usuario");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -49,6 +49,22 @@ var dotenv = require('dotenv');
 dotenv.config();
 var cadena_conexion = process.env.conexion;
 var SECRET_KEY = "SecretKeyRISC";
+exports.obtenerListaUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var conexion, script, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 1:
+                conexion = _a.sent();
+                script = "EXEC DEVOLVER_LISTA_USUARIOS '" + req.body.tipo_ambito_usuario + "' , '" + req.body.descripcion_ambito_usuario + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 2:
+                resultados = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.send(resultados.recordset)];
+        }
+    });
+}); };
 exports.obtenerDescripcionAmbito = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var conexion, script, resultados;
     return __generator(this, function (_a) {
@@ -73,6 +89,22 @@ exports.obtenerTipoAmbito = function (req, res) { return __awaiter(void 0, void 
             case 1:
                 conexion = _a.sent();
                 script = "EXEC DEVOLVER_AMBITO " + req.params.tipo_ambito;
+                return [4 /*yield*/, mssql.query(script)];
+            case 2:
+                resultados = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.send(resultados.recordset)];
+        }
+    });
+}); };
+exports.obtenerIdPunto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var conexion, script, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 1:
+                conexion = _a.sent();
+                script = "SELECT ID_PUNTO_DIG_HIS FROM PUNTOS_DIGITACION_HIS WHERE NOMBRE = '" + req.params.descripcion_ambito + "'";
                 return [4 /*yield*/, mssql.query(script)];
             case 2:
                 resultados = _a.sent();
@@ -159,9 +191,7 @@ exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                 userData = _a.sent();
                 if (!userData) {
                     //DNI NO PERTENECE A NINGÚN USUARIO
-                    return [2 /*return*/, res
-                            .status(409)
-                            .send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
+                    return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
                 }
                 else {
                     if (userData.estado == "INACTIVO") {
@@ -174,25 +204,20 @@ exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                         else {
                             resultPassword = bcryptjs_1.default.compareSync(req.body.password, userData.password);
                             if (resultPassword) {
-                                if (req.body.dni == req.body.password) {
-                                    return [2 /*return*/, res.status(409).send({ message: "ACTUALIZAR CONTRASEÑA" })];
-                                }
-                                else {
-                                    expiresIn = 30 * 60;
-                                    accessToken = jsonwebtoken_1.default.sign({ userData: userData }, SECRET_KEY, {
-                                        expiresIn: expiresIn,
-                                    });
-                                    dataUser = {
-                                        dni: userData.dni,
-                                        email: userData.email,
-                                        tipo_ambito: userData.tipo_ambito,
-                                        descripcion_ambito: userData.descripcion_ambito,
-                                        estado: userData.estado,
-                                        accessToken: accessToken,
-                                        expiresIn: expiresIn,
-                                    };
-                                    return [2 /*return*/, res.send({ dataUser: dataUser })];
-                                }
+                                expiresIn = 30 * 60;
+                                accessToken = jsonwebtoken_1.default.sign({ userData: userData }, SECRET_KEY, {
+                                    expiresIn: expiresIn,
+                                });
+                                dataUser = {
+                                    dni: userData.dni,
+                                    email: userData.email,
+                                    tipo_ambito: userData.tipo_ambito,
+                                    descripcion_ambito: userData.descripcion_ambito,
+                                    estado: userData.estado,
+                                    accessToken: accessToken,
+                                    expiresIn: expiresIn,
+                                };
+                                return [2 /*return*/, res.send({ dataUser: dataUser })];
                             }
                             else {
                                 //CONTRASEÑA INCORRECTA
@@ -204,6 +229,86 @@ exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();
+                return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.validarDni = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userData, conexion, script, Maestro_Registrador, conexion_1, script_1, Maestro_Personal, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 10, , 11]);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({
+                        where: { dni: req.body.dni },
+                    })];
+            case 1:
+                userData = _a.sent();
+                if (!!userData) return [3 /*break*/, 8];
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 2:
+                conexion = _a.sent();
+                script = "SELECT DISTINCT APELLIDO_PATERNO, APELLIDO_MATERNO, NOMBRES FROM MST_REGISTRADOR WHERE NUMERO_DOCUMENTO = '" + req.body.dni + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 3:
+                Maestro_Registrador = _a.sent();
+                mssql.close();
+                if (!(Maestro_Registrador.recordset == '')) return [3 /*break*/, 6];
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 4:
+                conexion_1 = _a.sent();
+                script_1 = "SELECT DISTINCT APELLIDO_PATERNO, APELLIDO_MATERNO, NOMBRES FROM MST_PERSONAL WHERE NUMERO_DOCUMENTO = '" + req.body.dni + "'";
+                return [4 /*yield*/, mssql.query(script_1)];
+            case 5:
+                Maestro_Personal = _a.sent();
+                mssql.close();
+                if (Maestro_Personal.recordset == '') {
+                    return [2 /*return*/, res.status(409).send({ message: "EL DNI NO SE ENCUENTRA EN NUESTRA BASE DE DATOS" })];
+                }
+                else {
+                    return [2 /*return*/, res.send(Maestro_Personal.recordset)];
+                }
+                return [3 /*break*/, 7];
+            case 6: return [2 /*return*/, res.send(Maestro_Registrador.recordset)];
+            case 7: return [3 /*break*/, 9];
+            case 8: return [2 /*return*/, res.status(409).send({ message: "EL DNI YA SE ENCUENTRA REGISTRADO" })];
+            case 9: return [3 /*break*/, 11];
+            case 10:
+                err_2 = _a.sent();
+                return [2 /*return*/, res.status(409).send({ message: "OCURRIO UN ERROR" })];
+            case 11: return [2 /*return*/];
+        }
+    });
+}); };
+exports.validarPassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userData, resultPassword, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({
+                        where: { dni: req.body.dni },
+                    })];
+            case 1:
+                userData = _a.sent();
+                if (!userData) {
+                    //DNI NO PERTENECE A NINGÚN USUARIO
+                    return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
+                }
+                else {
+                    resultPassword = bcryptjs_1.default.compareSync(req.body.password, userData.password);
+                    if (resultPassword && req.body.password == req.body.dni) {
+                        return [2 /*return*/, res.status(409).send({ message: "CONTRASEÑA SIN ACTUALIZAR" })];
+                    }
+                    else {
+                        //CONTRASEÑA YA ACTUALIZADA
+                        return [2 /*return*/, res.status(409).send({ message: "CONTRASEÑA ACTUALIZADA" })];
+                    }
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_3 = _a.sent();
                 return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
             case 3: return [2 /*return*/];
         }
