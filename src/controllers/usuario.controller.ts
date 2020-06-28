@@ -1,8 +1,9 @@
 import { Request, Response, response, query } from "express";
-import { getRepository, AdvancedConsoleLogger, createConnection, Any } from "typeorm";
+import { getRepository, AdvancedConsoleLogger, createConnection, Any, MoreThan } from "typeorm";
 import { USUARIOSRISC } from "../entity/Usuario";
 import jwt from "jsonwebtoken";
 import bycrypt from "bcryptjs";
+import { TIPOAMBITO } from "../entity/Tipo_Ambito";
 
 var mssql = require('mssql');
 var dotenv = require('dotenv');
@@ -13,7 +14,7 @@ const SECRET_KEY = "SecretKeyRISC";
 
 export const obtenerListaUsuarios = async (req: Request, res: Response): Promise<Response> => {
   let conexion = await mssql.connect(cadena_conexion);
-  let script = `EXEC DEVOLVER_LISTA_USUARIOS '${req.body.tipo_ambito_usuario}' , '${req.body.descripcion_ambito_usuario}'`;
+  let script = `EXEC DEVOLVER_LISTA_USUARIOS '${req.body.tipo_ambito}' , '${req.body.descripcion_ambito}'`;
   const resultados = await mssql.query(script);
   mssql.close();
   return res.send(resultados.recordset);
@@ -28,12 +29,23 @@ export const obtenerDescripcionAmbito = async (req: Request, res: Response): Pro
 }
 
 export const obtenerTipoAmbito = async (req: Request, res: Response): Promise<Response> => {
+  const tipo_ambito_usuario = await getRepository(TIPOAMBITO).findOne({ where: { descripcion_tipo_ambito: req.params.tipo_ambito }, });
+  if (!tipo_ambito_usuario) {
+    //DATO NO ENCONTRADO
+    return res.status(409).send({ message: "DATO NO ENCONTRADO" });
+  } else {
+    const resultado = await getRepository(TIPOAMBITO).find({ where: { id_tipo_ambito: MoreThan(tipo_ambito_usuario.id_tipo_ambito) }, });
+    return res.json(resultado);
+  }
+}
+
+/* export const obtenerTipoAmbito = async (req: Request, res: Response): Promise<Response> => {
   let conexion = await mssql.connect(cadena_conexion);
   let script = `EXEC DEVOLVER_AMBITO ${req.params.tipo_ambito}`;
   const resultados = await mssql.query(script);
   mssql.close();
   return res.send(resultados.recordset);
-}
+} */
 
 export const obtenerIdPunto = async (req: Request, res: Response): Promise<Response> => {
   let conexion = await mssql.connect(cadena_conexion);

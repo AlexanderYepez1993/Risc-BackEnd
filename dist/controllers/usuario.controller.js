@@ -44,6 +44,7 @@ var typeorm_1 = require("typeorm");
 var Usuario_1 = require("../entity/Usuario");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
+var Tipo_Ambito_1 = require("../entity/Tipo_Ambito");
 var mssql = require('mssql');
 var dotenv = require('dotenv');
 dotenv.config();
@@ -56,7 +57,7 @@ exports.obtenerListaUsuarios = function (req, res) { return __awaiter(void 0, vo
             case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 1:
                 conexion = _a.sent();
-                script = "EXEC DEVOLVER_LISTA_USUARIOS '" + req.body.tipo_ambito_usuario + "' , '" + req.body.descripcion_ambito_usuario + "'";
+                script = "EXEC DEVOLVER_LISTA_USUARIOS '" + req.body.tipo_ambito + "' , '" + req.body.descripcion_ambito + "'";
                 return [4 /*yield*/, mssql.query(script)];
             case 2:
                 resultados = _a.sent();
@@ -82,21 +83,29 @@ exports.obtenerDescripcionAmbito = function (req, res) { return __awaiter(void 0
     });
 }); };
 exports.obtenerTipoAmbito = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var conexion, script, resultados;
+    var tipo_ambito_usuario, resultado;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Tipo_Ambito_1.TIPOAMBITO).findOne({ where: { descripcion_tipo_ambito: req.params.tipo_ambito }, })];
             case 1:
-                conexion = _a.sent();
-                script = "EXEC DEVOLVER_AMBITO " + req.params.tipo_ambito;
-                return [4 /*yield*/, mssql.query(script)];
-            case 2:
-                resultados = _a.sent();
-                mssql.close();
-                return [2 /*return*/, res.send(resultados.recordset)];
+                tipo_ambito_usuario = _a.sent();
+                if (!!tipo_ambito_usuario) return [3 /*break*/, 2];
+                //DATO NO ENCONTRADO
+                return [2 /*return*/, res.status(409).send({ message: "DATO NO ENCONTRADO" })];
+            case 2: return [4 /*yield*/, typeorm_1.getRepository(Tipo_Ambito_1.TIPOAMBITO).find({ where: { id_tipo_ambito: typeorm_1.MoreThan(tipo_ambito_usuario.id_tipo_ambito) }, })];
+            case 3:
+                resultado = _a.sent();
+                return [2 /*return*/, res.json(resultado)];
         }
     });
 }); };
+/* export const obtenerTipoAmbito = async (req: Request, res: Response): Promise<Response> => {
+  let conexion = await mssql.connect(cadena_conexion);
+  let script = `EXEC DEVOLVER_AMBITO ${req.params.tipo_ambito}`;
+  const resultados = await mssql.query(script);
+  mssql.close();
+  return res.send(resultados.recordset);
+} */
 exports.obtenerIdPunto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var conexion, script, resultados;
     return __generator(this, function (_a) {
