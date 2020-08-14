@@ -39,17 +39,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarUsuario = exports.actualizarUsuario = exports.actualizarPassword = exports.validarPassword = exports.validarDni = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerIdPunto = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = exports.obtenerListaUsuarios = void 0;
+exports.eliminarUsuario = exports.actualizarUsuario = exports.restablecerPassword = exports.actualizarPassword = exports.validarPassword = exports.validarDni = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerIdPunto = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = exports.obtenerListaUsuarios = exports.obtenerRoles = void 0;
 var typeorm_1 = require("typeorm");
 var Usuario_1 = require("../entity/Usuario");
+var Tipo_Ambito_1 = require("../entity/Tipo_Ambito");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
-var Tipo_Ambito_1 = require("../entity/Tipo_Ambito");
 var mssql = require('mssql');
 var dotenv = require('dotenv');
 dotenv.config();
 var cadena_conexion = process.env.conexion;
 var SECRET_KEY = "SecretKeyRISC";
+exports.obtenerRoles = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var conexion, script, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 1:
+                conexion = _a.sent();
+                script = "EXEC DEVOLVER_ROLES '" + req.body.tipo_ambito_usuario + "' , '" + req.body.tipo_ambito_crear + "' , '" + req.body.roles_asignados + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 2:
+                resultados = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.send(resultados.recordset)];
+        }
+    });
+}); };
 exports.obtenerListaUsuarios = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var conexion, script, resultados;
     return __generator(this, function (_a) {
@@ -57,7 +73,7 @@ exports.obtenerListaUsuarios = function (req, res) { return __awaiter(void 0, vo
             case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 1:
                 conexion = _a.sent();
-                script = "EXEC DEVOLVER_LISTA_USUARIOS '" + req.body.tipo_ambito + "' , '" + req.body.descripcion_ambito + "'";
+                script = "EXEC DEVOLVER_LISTA_USUARIOS '" + req.body.tipo_ambito + "' , '" + req.body.descripcion_ambito + "' , '" + req.body.dni + "'";
                 return [4 /*yield*/, mssql.query(script)];
             case 2:
                 resultados = _a.sent();
@@ -86,26 +102,19 @@ exports.obtenerTipoAmbito = function (req, res) { return __awaiter(void 0, void 
     var tipo_ambito_usuario, resultado;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Tipo_Ambito_1.TIPOAMBITO).findOne({ where: { descripcion_tipo_ambito: req.params.tipo_ambito }, })];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Tipo_Ambito_1.TipoAmbito).findOne({ where: { descripcion_tipo_ambito: req.params.descripcion_ambito }, })];
             case 1:
                 tipo_ambito_usuario = _a.sent();
                 if (!!tipo_ambito_usuario) return [3 /*break*/, 2];
                 //DATO NO ENCONTRADO
                 return [2 /*return*/, res.status(409).send({ message: "DATO NO ENCONTRADO" })];
-            case 2: return [4 /*yield*/, typeorm_1.getRepository(Tipo_Ambito_1.TIPOAMBITO).find({ where: { id_tipo_ambito: typeorm_1.MoreThan(tipo_ambito_usuario.id_tipo_ambito) }, })];
+            case 2: return [4 /*yield*/, typeorm_1.getRepository(Tipo_Ambito_1.TipoAmbito).find({ where: { id_tipo_ambito: typeorm_1.MoreThan(tipo_ambito_usuario.id_tipo_ambito - 1) }, })];
             case 3:
                 resultado = _a.sent();
                 return [2 /*return*/, res.json(resultado)];
         }
     });
 }); };
-/* export const obtenerTipoAmbito = async (req: Request, res: Response): Promise<Response> => {
-  let conexion = await mssql.connect(cadena_conexion);
-  let script = `EXEC DEVOLVER_AMBITO ${req.params.tipo_ambito}`;
-  const resultados = await mssql.query(script);
-  mssql.close();
-  return res.send(resultados.recordset);
-} */
 exports.obtenerIdPunto = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var conexion, script, resultados;
     return __generator(this, function (_a) {
@@ -126,7 +135,7 @@ exports.obtenerUsuarios = function (req, res) { return __awaiter(void 0, void 0,
     var usuarios;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).find()];
             case 1:
                 usuarios = _a.sent();
                 return [2 /*return*/, res.json(usuarios)];
@@ -137,7 +146,7 @@ exports.obtenerUsuario = function (req, res) { return __awaiter(void 0, void 0, 
     var resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne(req.params.dni)];
             case 1:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
@@ -145,7 +154,7 @@ exports.obtenerUsuario = function (req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nuevoUsuario, newUser, usuarioExistente, userData, expiresIn, accessToken, dataUser;
+    var nuevoUsuario, newUser, usuarioExistente, userData, expiresIn, accessToken, dataUser, conexion, script, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -160,14 +169,15 @@ exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                     descripcion_ambito: req.body.descripcion_ambito,
                     estado: req.body.estado,
                     isLogged: req.body.isLogged,
+                    fecha_creacion: req.body.fecha_creacion,
                 };
-                newUser = typeorm_1.getRepository(Usuario_1.USUARIOSRISC).create(nuevoUsuario);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({ where: { dni: nuevoUsuario.dni }, })];
+                newUser = typeorm_1.getRepository(Usuario_1.UsuariosRisc).create(nuevoUsuario);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne({ where: { dni: nuevoUsuario.dni }, })];
             case 1:
                 usuarioExistente = _a.sent();
                 if (!((nuevoUsuario === null || nuevoUsuario === void 0 ? void 0 : nuevoUsuario.dni) == (usuarioExistente === null || usuarioExistente === void 0 ? void 0 : usuarioExistente.dni))) return [3 /*break*/, 2];
                 return [2 /*return*/, res.status(409).send({ message: "EL USUARIO YA EXISTE" })];
-            case 2: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).save(newUser)];
+            case 2: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).save(newUser)];
             case 3:
                 userData = _a.sent();
                 expiresIn = 30 * 60;
@@ -183,63 +193,72 @@ exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                     expiresIn: expiresIn,
                     estado: userData.estado,
                 };
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 4:
+                conexion = _a.sent();
+                script = "EXEC ASIGNAR_ROLES '" + req.body.dni + "' , '" + req.body.roles_asignados + "' , '" + req.body.roles_removidos + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 5:
+                resultados = _a.sent();
+                mssql.close();
                 return [2 /*return*/, res.json(dataUser)];
         }
     });
 }); };
 exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userData, resultPassword, expiresIn, accessToken, dataUser, err_1;
+    var userData, resultPassword, expiresIn, accessToken, dataUser, conexion, script, roles, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({
-                        where: { dni: req.body.dni },
-                    })];
+                _a.trys.push([0, 9, , 10]);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne({ where: { dni: req.body.dni }, })];
             case 1:
                 userData = _a.sent();
-                if (!userData) {
-                    //DNI NO PERTENECE A NINGÚN USUARIO
-                    return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
-                }
-                else {
-                    if (userData.estado == "INACTIVO") {
-                        return [2 /*return*/, res.status(409).send({ message: "EL USUARIO NO SE ENCUENTRA ACTIVO" })];
-                    }
-                    else {
-                        if (userData.isLogged == "1") {
-                            return [2 /*return*/, res.status(409).send({ message: "EL USUARIO YA SE ENCUENTRA LOGEADO" })];
-                        }
-                        else {
-                            resultPassword = bcryptjs_1.default.compareSync(req.body.password, userData.password);
-                            if (resultPassword) {
-                                expiresIn = 30 * 60;
-                                accessToken = jsonwebtoken_1.default.sign({ userData: userData }, SECRET_KEY, {
-                                    expiresIn: expiresIn,
-                                });
-                                dataUser = {
-                                    dni: userData.dni,
-                                    email: userData.email,
-                                    tipo_ambito: userData.tipo_ambito,
-                                    descripcion_ambito: userData.descripcion_ambito,
-                                    estado: userData.estado,
-                                    accessToken: accessToken,
-                                    expiresIn: expiresIn,
-                                };
-                                return [2 /*return*/, res.send({ dataUser: dataUser })];
-                            }
-                            else {
-                                //CONTRASEÑA INCORRECTA
-                                return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
-                            }
-                        }
-                    }
-                }
-                return [3 /*break*/, 3];
+                if (!!userData) return [3 /*break*/, 2];
+                //DNI NO PERTENECE A NINGÚN USUARIO
+                return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
             case 2:
+                if (!(userData.estado == "INACTIVO")) return [3 /*break*/, 3];
+                return [2 /*return*/, res.status(409).send({ message: "EL USUARIO NO SE ENCUENTRA ACTIVO" })];
+            case 3:
+                if (!(userData.isLogged == "1")) return [3 /*break*/, 4];
+                return [2 /*return*/, res.status(409).send({ message: "EL USUARIO YA SE ENCUENTRA LOGEADO" })];
+            case 4:
+                resultPassword = bcryptjs_1.default.compareSync(req.body.password, userData.password);
+                if (!resultPassword) return [3 /*break*/, 7];
+                expiresIn = 30 * 60;
+                accessToken = jsonwebtoken_1.default.sign({ userData: userData }, SECRET_KEY, {
+                    expiresIn: expiresIn,
+                });
+                dataUser = {
+                    dni: userData.dni,
+                    apellido_paterno: userData.apellido_paterno,
+                    apellido_materno: userData.apellido_materno,
+                    nombres: userData.nombres,
+                    email: userData.email,
+                    tipo_ambito: userData.tipo_ambito,
+                    descripcion_ambito: userData.descripcion_ambito,
+                    estado: userData.estado,
+                    accessToken: accessToken,
+                    expiresIn: expiresIn,
+                };
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 5:
+                conexion = _a.sent();
+                script = "EXEC DEVOLVER_ROLES_USUARIO '" + req.body.dni + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 6:
+                roles = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.send({ dataUser: dataUser, roles: roles.recordset })];
+            case 7: 
+            //CONTRASEÑA INCORRECTA
+            return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
+            case 8: return [3 /*break*/, 10];
+            case 9:
                 err_1 = _a.sent();
                 return [2 /*return*/, res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" })];
-            case 3: return [2 /*return*/];
+            case 10: return [2 /*return*/];
         }
     });
 }); };
@@ -249,9 +268,7 @@ exports.validarDni = function (req, res) { return __awaiter(void 0, void 0, void
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 10, , 11]);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({
-                        where: { dni: req.body.dni },
-                    })];
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne({ where: { dni: req.body.dni }, })];
             case 1:
                 userData = _a.sent();
                 if (!!userData) return [3 /*break*/, 8];
@@ -296,9 +313,7 @@ exports.validarPassword = function (req, res) { return __awaiter(void 0, void 0,
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne({
-                        where: { dni: req.body.dni },
-                    })];
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne({ where: { dni: req.body.dni }, })];
             case 1:
                 userData = _a.sent();
                 if (!userData) {
@@ -324,20 +339,50 @@ exports.validarPassword = function (req, res) { return __awaiter(void 0, void 0,
     });
 }); };
 exports.actualizarPassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var usuario, datoRecibido, resultados;
+    var usuario, datoRecibido, passwordAntigua, resultPassword, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne(req.params.dni)];
             case 1:
                 usuario = _a.sent();
                 datoRecibido = {
-                    password: bcryptjs_1.default.hashSync(req.body.password),
+                    password: bcryptjs_1.default.hashSync(req.body.passwordNuevo),
                 };
                 if (!(usuario == undefined)) return [3 /*break*/, 2];
                 return [2 /*return*/, res.status(409).send({ message: "DNI NO PERTENECE A NINGUN USUARIO" })];
             case 2:
-                typeorm_1.getRepository(Usuario_1.USUARIOSRISC).merge(usuario, datoRecibido);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).save(usuario)];
+                passwordAntigua = bcryptjs_1.default.compareSync(req.body.passwordAntiguo, usuario.password);
+                if (!passwordAntigua) return [3 /*break*/, 6];
+                resultPassword = bcryptjs_1.default.compareSync(req.body.passwordNuevo, usuario.password);
+                if (!resultPassword) return [3 /*break*/, 3];
+                return [2 /*return*/, res.status(409).send({ message: "CONTRASEÑA DEBE SER DIFERENTE DE LA ACTUAL" })];
+            case 3:
+                typeorm_1.getRepository(Usuario_1.UsuariosRisc).merge(usuario, datoRecibido);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).save(usuario)];
+            case 4:
+                resultados = _a.sent();
+                return [2 /*return*/, res.json(resultados)];
+            case 5: return [3 /*break*/, 7];
+            case 6: return [2 /*return*/, res.status(409).send({ message: "INGRESAR CORRECTAMENTE LA CONTRASEÑA ANTIGUA" })];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); };
+exports.restablecerPassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var usuario, datoRecibido, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne(req.params.dni)];
+            case 1:
+                usuario = _a.sent();
+                datoRecibido = {
+                    password: bcryptjs_1.default.hashSync(req.body.passwordNuevo),
+                };
+                if (!(usuario == undefined)) return [3 /*break*/, 2];
+                return [2 /*return*/, res.status(409).send({ message: "DNI NO PERTENECE A NINGUN USUARIO" })];
+            case 2:
+                typeorm_1.getRepository(Usuario_1.UsuariosRisc).merge(usuario, datoRecibido);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).save(usuario)];
             case 3:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
@@ -348,12 +393,12 @@ exports.actualizarUsuario = function (req, res) { return __awaiter(void 0, void 
     var usuario, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne(req.params.dni)];
             case 1:
                 usuario = _a.sent();
                 if (!usuario) return [3 /*break*/, 3];
-                typeorm_1.getRepository(Usuario_1.USUARIOSRISC).merge(usuario, req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).save(usuario)];
+                typeorm_1.getRepository(Usuario_1.UsuariosRisc).merge(usuario, req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).save(usuario)];
             case 2:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
@@ -365,11 +410,11 @@ exports.eliminarUsuario = function (req, res) { return __awaiter(void 0, void 0,
     var usuario, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).findOne(req.params.dni)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne(req.params.dni)];
             case 1:
                 usuario = _a.sent();
                 if (!usuario) return [3 /*break*/, 3];
-                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.USUARIOSRISC).delete(req.params.dni)];
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).delete(req.params.dni)];
             case 2:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];

@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity()
-export class USUARIOSRISC {
+export class UsuariosRisc {
     @PrimaryColumn({ type: "nvarchar", length: 8 })
     dni: string;
     @Column({ type: "nvarchar", length: 250, nullable: false })
@@ -22,4 +22,6 @@ export class USUARIOSRISC {
     estado: string;
     @Column({ type: "nvarchar", length: 1, nullable: false })
     isLogged: string;
+    @Column({ type: "datetime", nullable: false })
+    fecha_creacion: Date;
 }

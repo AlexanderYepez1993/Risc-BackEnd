@@ -9,22 +9,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TipoAmbito = void 0;
+exports.UsuariosRolesRisc = void 0;
 var typeorm_1 = require("typeorm");
-var TipoAmbito = /** @class */ (function () {
-    function TipoAmbito() {
+var UsuariosRolesRisc = /** @class */ (function () {
+    function UsuariosRolesRisc() {
     }
     __decorate([
-        typeorm_1.PrimaryGeneratedColumn({ type: "int" }),
-        __metadata("design:type", Number)
-    ], TipoAmbito.prototype, "id_tipo_ambito", void 0);
-    __decorate([
-        typeorm_1.Column({ type: "nvarchar", length: 50, nullable: false }),
+        typeorm_1.PrimaryColumn({ type: "nvarchar", length: 8 }),
         __metadata("design:type", String)
-    ], TipoAmbito.prototype, "descripcion_tipo_ambito", void 0);
-    TipoAmbito = __decorate([
+    ], UsuariosRolesRisc.prototype, "dni", void 0);
+    __decorate([
+        typeorm_1.PrimaryColumn({ type: "int" }),
+        __metadata("design:type", Number)
+    ], UsuariosRolesRisc.prototype, "id_rol_risc", void 0);
+    __decorate([
+        typeorm_1.Column({ type: "nvarchar", length: 250, nullable: false }),
+        __metadata("design:type", String)
+    ], UsuariosRolesRisc.prototype, "nombre_rol_risc", void 0);
+    __decorate([
+        typeorm_1.Column({ type: "nvarchar", length: 250, nullable: false }),
+        __metadata("design:type", String)
+    ], UsuariosRolesRisc.prototype, "descripcion_rol_risc", void 0);
+    UsuariosRolesRisc = __decorate([
         typeorm_1.Entity()
-    ], TipoAmbito);
-    return TipoAmbito;
+    ], UsuariosRolesRisc);
+    return UsuariosRolesRisc;
 }());
-exports.TipoAmbito = TipoAmbito;
+exports.UsuariosRolesRisc = UsuariosRolesRisc;

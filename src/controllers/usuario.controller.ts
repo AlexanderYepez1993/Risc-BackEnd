@@ -1,9 +1,10 @@
-import { Request, Response, response, query } from "express";
-import { getRepository, AdvancedConsoleLogger, createConnection, Any, MoreThan } from "typeorm";
-import { USUARIOSRISC } from "../entity/Usuario";
+import { Request, Response } from "express";
+import { getRepository, MoreThan } from "typeorm";
+import { UsuariosRisc } from "../entity/Usuario";
+import { TipoAmbito } from "../entity/Tipo_Ambito";
 import jwt from "jsonwebtoken";
 import bycrypt from "bcryptjs";
-import { TIPOAMBITO } from "../entity/Tipo_Ambito";
+
 
 var mssql = require('mssql');
 var dotenv = require('dotenv');
@@ -12,9 +13,17 @@ const cadena_conexion = process.env.conexion;
 
 const SECRET_KEY = "SecretKeyRISC";
 
+export const obtenerRoles = async (req: Request, res: Response): Promise<Response> => {
+  let conexion = await mssql.connect(cadena_conexion);
+  let script = `EXEC DEVOLVER_ROLES '${req.body.tipo_ambito_usuario}' , '${req.body.tipo_ambito_crear}' , '${req.body.roles_asignados}'`;
+  const resultados = await mssql.query(script);
+  mssql.close();
+  return res.send(resultados.recordset);
+}
+
 export const obtenerListaUsuarios = async (req: Request, res: Response): Promise<Response> => {
   let conexion = await mssql.connect(cadena_conexion);
-  let script = `EXEC DEVOLVER_LISTA_USUARIOS '${req.body.tipo_ambito}' , '${req.body.descripcion_ambito}'`;
+  let script = `EXEC DEVOLVER_LISTA_USUARIOS '${req.body.tipo_ambito}' , '${req.body.descripcion_ambito}' , '${req.body.dni}'`;
   const resultados = await mssql.query(script);
   mssql.close();
   return res.send(resultados.recordset);
@@ -29,23 +38,15 @@ export const obtenerDescripcionAmbito = async (req: Request, res: Response): Pro
 }
 
 export const obtenerTipoAmbito = async (req: Request, res: Response): Promise<Response> => {
-  const tipo_ambito_usuario = await getRepository(TIPOAMBITO).findOne({ where: { descripcion_tipo_ambito: req.params.tipo_ambito }, });
+  const tipo_ambito_usuario = await getRepository(TipoAmbito).findOne({ where: { descripcion_tipo_ambito: req.params.descripcion_ambito }, });
   if (!tipo_ambito_usuario) {
     //DATO NO ENCONTRADO
     return res.status(409).send({ message: "DATO NO ENCONTRADO" });
   } else {
-    const resultado = await getRepository(TIPOAMBITO).find({ where: { id_tipo_ambito: MoreThan(tipo_ambito_usuario.id_tipo_ambito) }, });
+    const resultado = await getRepository(TipoAmbito).find({ where: { id_tipo_ambito: MoreThan(tipo_ambito_usuario.id_tipo_ambito - 1) }, });
     return res.json(resultado);
   }
 }
-
-/* export const obtenerTipoAmbito = async (req: Request, res: Response): Promise<Response> => {
-  let conexion = await mssql.connect(cadena_conexion);
-  let script = `EXEC DEVOLVER_AMBITO ${req.params.tipo_ambito}`;
-  const resultados = await mssql.query(script);
-  mssql.close();
-  return res.send(resultados.recordset);
-} */
 
 export const obtenerIdPunto = async (req: Request, res: Response): Promise<Response> => {
   let conexion = await mssql.connect(cadena_conexion);
@@ -56,12 +57,12 @@ export const obtenerIdPunto = async (req: Request, res: Response): Promise<Respo
 }
 
 export const obtenerUsuarios = async (req: Request, res: Response): Promise<Response> => {
-  const usuarios = await getRepository(USUARIOSRISC).find();
+  const usuarios = await getRepository(UsuariosRisc).find();
   return res.json(usuarios);
 };
 
 export const obtenerUsuario = async (req: Request, res: Response): Promise<Response> => {
-  const resultados = await getRepository(USUARIOSRISC).findOne(req.params.dni);
+  const resultados = await getRepository(UsuariosRisc).findOne(req.params.dni);
   return res.json(resultados);
 };
 
@@ -77,13 +78,14 @@ export const crearUsuario = async (req: Request, res: Response): Promise<Respons
     descripcion_ambito: req.body.descripcion_ambito,
     estado: req.body.estado,
     isLogged: req.body.isLogged,
+    fecha_creacion: req.body.fecha_creacion,
   };
-  const newUser = getRepository(USUARIOSRISC).create(nuevoUsuario);
-  const usuarioExistente = await getRepository(USUARIOSRISC).findOne({ where: { dni: nuevoUsuario.dni }, });
+  const newUser = getRepository(UsuariosRisc).create(nuevoUsuario);
+  const usuarioExistente = await getRepository(UsuariosRisc).findOne({ where: { dni: nuevoUsuario.dni }, });
   if (nuevoUsuario?.dni == usuarioExistente?.dni) {
     return res.status(409).send({ message: "EL USUARIO YA EXISTE" });
   } else {
-    const userData = await getRepository(USUARIOSRISC).save(newUser);
+    const userData = await getRepository(UsuariosRisc).save(newUser);
     const expiresIn = 30 * 60;
     const accessToken = jwt.sign({ nuevoUsuario }, SECRET_KEY, {
       expiresIn: expiresIn,
@@ -97,15 +99,17 @@ export const crearUsuario = async (req: Request, res: Response): Promise<Respons
       expiresIn: expiresIn,
       estado: userData.estado,
     };
+    let conexion = await mssql.connect(cadena_conexion);
+    let script = `EXEC ASIGNAR_ROLES '${req.body.dni}' , '${req.body.roles_asignados}' , '${req.body.roles_removidos}'`;
+    const resultados = await mssql.query(script);
+    mssql.close();
     return res.json(dataUser);
   }
 };
 
 export const loginUsuario = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const userData = await getRepository(USUARIOSRISC).findOne({
-      where: { dni: req.body.dni },
-    });
+    const userData = await getRepository(UsuariosRisc).findOne({ where: { dni: req.body.dni }, });
     if (!userData) {
       //DNI NO PERTENECE A NINGÚN USUARIO
       return res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" });
@@ -124,6 +128,9 @@ export const loginUsuario = async (req: Request, res: Response): Promise<Respons
             });
             const dataUser = {
               dni: userData.dni,
+              apellido_paterno: userData.apellido_paterno,
+              apellido_materno: userData.apellido_materno,
+              nombres: userData.nombres,
               email: userData.email,
               tipo_ambito: userData.tipo_ambito,
               descripcion_ambito: userData.descripcion_ambito,
@@ -131,7 +138,11 @@ export const loginUsuario = async (req: Request, res: Response): Promise<Respons
               accessToken: accessToken,
               expiresIn: expiresIn,
             };
-            return res.send({ dataUser });
+            let conexion = await mssql.connect(cadena_conexion);
+            let script = `EXEC DEVOLVER_ROLES_USUARIO '${req.body.dni}'`;
+            const roles = await mssql.query(script);
+            mssql.close();
+            return res.send({ dataUser: dataUser, roles: roles.recordset });
           } else {
             //CONTRASEÑA INCORRECTA
             return res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" });
@@ -146,10 +157,7 @@ export const loginUsuario = async (req: Request, res: Response): Promise<Respons
 
 export const validarDni = async (req: Request, res: Response): Promise<Response> => {
   try {
-
-    const userData = await getRepository(USUARIOSRISC).findOne({
-      where: { dni: req.body.dni },
-    });
+    const userData = await getRepository(UsuariosRisc).findOne({ where: { dni: req.body.dni }, });
     if (!userData) {
       //DNI NO PERTENECE A NINGÚN USUARIO
       let conexion = await mssql.connect(cadena_conexion);
@@ -179,9 +187,7 @@ export const validarDni = async (req: Request, res: Response): Promise<Response>
 
 export const validarPassword = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const userData = await getRepository(USUARIOSRISC).findOne({
-      where: { dni: req.body.dni },
-    });
+    const userData = await getRepository(UsuariosRisc).findOne({ where: { dni: req.body.dni }, });
     if (!userData) {
       //DNI NO PERTENECE A NINGÚN USUARIO
       return res.status(409).send({ message: "VERIFICAR SU USUARIO Y/O CONTRASEÑA" });
@@ -200,35 +206,57 @@ export const validarPassword = async (req: Request, res: Response): Promise<Resp
 };
 
 export const actualizarPassword = async (req: Request, res: Response): Promise<Response> => {
-  const usuario = await getRepository(USUARIOSRISC).findOne(req.params.dni);
+  const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
   const datoRecibido = {
-    password: bycrypt.hashSync(req.body.password),
+    password: bycrypt.hashSync(req.body.passwordNuevo),
   }
   if (usuario == undefined) {
     return res.status(409).send({ message: "DNI NO PERTENECE A NINGUN USUARIO" });
   } else {
-    getRepository(USUARIOSRISC).merge(usuario, datoRecibido);
-    const resultados = await getRepository(USUARIOSRISC).save(usuario);
+    const passwordAntigua = bycrypt.compareSync(req.body.passwordAntiguo, usuario.password);
+    if (passwordAntigua) {
+      const resultPassword = bycrypt.compareSync(req.body.passwordNuevo, usuario.password);
+      if (resultPassword) {
+        return res.status(409).send({ message: "CONTRASEÑA DEBE SER DIFERENTE DE LA ACTUAL" });
+      } else {
+        getRepository(UsuariosRisc).merge(usuario, datoRecibido);
+        const resultados = await getRepository(UsuariosRisc).save(usuario);
+        return res.json(resultados);
+      }
+    } else {
+      return res.status(409).send({ message: "INGRESAR CORRECTAMENTE LA CONTRASEÑA ANTIGUA" });
+    }
+  }
+};
+
+export const restablecerPassword = async (req: Request, res: Response): Promise<Response> => {
+  const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
+  const datoRecibido = {
+    password: bycrypt.hashSync(req.body.passwordNuevo),
+  }
+  if (usuario == undefined) {
+    return res.status(409).send({ message: "DNI NO PERTENECE A NINGUN USUARIO" });
+  } else {
+    getRepository(UsuariosRisc).merge(usuario, datoRecibido);
+    const resultados = await getRepository(UsuariosRisc).save(usuario);
     return res.json(resultados);
   }
 };
 
 export const actualizarUsuario = async (req: Request, res: Response): Promise<Response> => {
-  const usuario = await getRepository(USUARIOSRISC).findOne(req.params.dni);
+  const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
   if (usuario) {
-    getRepository(USUARIOSRISC).merge(usuario, req.body);
-    const resultados = await getRepository(USUARIOSRISC).save(usuario);
+    getRepository(UsuariosRisc).merge(usuario, req.body);
+    const resultados = await getRepository(UsuariosRisc).save(usuario);
     return res.json(resultados);
   }
   return res.status(404).json({ msg: "USUARIO NO ENCONTRADO" });
 };
 
 export const eliminarUsuario = async (req: Request, res: Response): Promise<Response> => {
-  const usuario = await getRepository(USUARIOSRISC).findOne(req.params.dni);
+  const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
   if (usuario) {
-    const resultados = await getRepository(USUARIOSRISC).delete(
-      req.params.dni
-    );
+    const resultados = await getRepository(UsuariosRisc).delete(req.params.dni);
     return res.json(resultados);
   }
   return res.status(404).json({ msg: "USUARIO NO ENCONTRADO" });

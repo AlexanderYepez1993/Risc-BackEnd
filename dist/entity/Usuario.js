@@ -9,54 +9,58 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.USUARIOSRISC = void 0;
+exports.UsuariosRisc = void 0;
 var typeorm_1 = require("typeorm");
-var USUARIOSRISC = /** @class */ (function () {
-    function USUARIOSRISC() {
+var UsuariosRisc = /** @class */ (function () {
+    function UsuariosRisc() {
     }
     __decorate([
         typeorm_1.PrimaryColumn({ type: "nvarchar", length: 8 }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "dni", void 0);
+    ], UsuariosRisc.prototype, "dni", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 250, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "password", void 0);
+    ], UsuariosRisc.prototype, "password", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 200, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "email", void 0);
+    ], UsuariosRisc.prototype, "email", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 200, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "apellido_paterno", void 0);
+    ], UsuariosRisc.prototype, "apellido_paterno", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 200, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "apellido_materno", void 0);
+    ], UsuariosRisc.prototype, "apellido_materno", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 200, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "nombres", void 0);
+    ], UsuariosRisc.prototype, "nombres", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 200, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "tipo_ambito", void 0);
+    ], UsuariosRisc.prototype, "tipo_ambito", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 200, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "descripcion_ambito", void 0);
+    ], UsuariosRisc.prototype, "descripcion_ambito", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 8, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "estado", void 0);
+    ], UsuariosRisc.prototype, "estado", void 0);
     __decorate([
         typeorm_1.Column({ type: "nvarchar", length: 1, nullable: false }),
         __metadata("design:type", String)
-    ], USUARIOSRISC.prototype, "isLogged", void 0);
-    USUARIOSRISC = __decorate([
+    ], UsuariosRisc.prototype, "isLogged", void 0);
+    __decorate([
+        typeorm_1.Column({ type: "datetime", nullable: false }),
+        __metadata("design:type", Date)
+    ], UsuariosRisc.prototype, "fecha_creacion", void 0);
+    UsuariosRisc = __decorate([
         typeorm_1.Entity()
-    ], USUARIOSRISC);
-    return USUARIOSRISC;
+    ], UsuariosRisc);
+    return UsuariosRisc;
 }());
-exports.USUARIOSRISC = USUARIOSRISC;
+exports.UsuariosRisc = UsuariosRisc;
