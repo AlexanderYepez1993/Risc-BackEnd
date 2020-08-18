@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarUsuario = exports.actualizarUsuario = exports.restablecerPassword = exports.actualizarPassword = exports.validarPassword = exports.validarDni = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerIdPunto = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = exports.obtenerListaUsuarios = exports.obtenerRoles = void 0;
+exports.eliminarUsuario = exports.actualizarUsuarioLogged = exports.actualizarUsuario = exports.restablecerPassword = exports.actualizarPassword = exports.validarPassword = exports.validarDni = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerIdPunto = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = exports.obtenerListaUsuarios = exports.obtenerRoles = exports.obtenerRolesUsuario = void 0;
 var typeorm_1 = require("typeorm");
 var Usuario_1 = require("../entity/Usuario");
 var Tipo_Ambito_1 = require("../entity/Tipo_Ambito");
@@ -50,11 +50,31 @@ var dotenv = require('dotenv');
 dotenv.config();
 var cadena_conexion = process.env.conexion;
 var SECRET_KEY = "SecretKeyRISC";
+exports.obtenerRolesUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var conexion, script, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                mssql.close();
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 1:
+                conexion = _a.sent();
+                script = "SELECT id_rol_risc, nombre_rol_risc, descripcion_rol_risc FROM USUARIOS_ROLES_RISC WHERE DNI = '" + req.params.dni + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 2:
+                resultados = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.send(resultados.recordset)];
+        }
+    });
+}); };
 exports.obtenerRoles = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var conexion, script, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 0:
+                mssql.close();
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 1:
                 conexion = _a.sent();
                 script = "EXEC DEVOLVER_ROLES '" + req.body.tipo_ambito_usuario + "' , '" + req.body.tipo_ambito_crear + "' , '" + req.body.roles_asignados + "'";
@@ -70,7 +90,9 @@ exports.obtenerListaUsuarios = function (req, res) { return __awaiter(void 0, vo
     var conexion, script, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 0:
+                mssql.close();
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 1:
                 conexion = _a.sent();
                 script = "EXEC DEVOLVER_LISTA_USUARIOS '" + req.body.tipo_ambito + "' , '" + req.body.descripcion_ambito + "' , '" + req.body.dni + "'";
@@ -86,7 +108,9 @@ exports.obtenerDescripcionAmbito = function (req, res) { return __awaiter(void 0
     var conexion, script, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 0:
+                mssql.close();
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 1:
                 conexion = _a.sent();
                 script = "EXEC DEVOLVER_DESCRIPCION_AMBITO '" + req.body.tipo_ambito_usuario + "' , '" + req.body.descripcion_ambito_usuario + "' , '" + req.body.tipo_ambito_crear + "'";
@@ -119,7 +143,9 @@ exports.obtenerIdPunto = function (req, res) { return __awaiter(void 0, void 0, 
     var conexion, script, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 0:
+                mssql.close();
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 1:
                 conexion = _a.sent();
                 script = "SELECT ID_PUNTO_DIG_HIS FROM PUNTOS_DIGITACION_HIS WHERE NOMBRE = '" + req.params.descripcion_ambito + "'";
@@ -193,6 +219,7 @@ exports.crearUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                     expiresIn: expiresIn,
                     estado: userData.estado,
                 };
+                mssql.close();
                 return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 4:
                 conexion = _a.sent();
@@ -242,6 +269,7 @@ exports.loginUsuario = function (req, res) { return __awaiter(void 0, void 0, vo
                     accessToken: accessToken,
                     expiresIn: expiresIn,
                 };
+                mssql.close();
                 return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 5:
                 conexion = _a.sent();
@@ -272,6 +300,8 @@ exports.validarDni = function (req, res) { return __awaiter(void 0, void 0, void
             case 1:
                 userData = _a.sent();
                 if (!!userData) return [3 /*break*/, 8];
+                //DNI NO PERTENECE A NINGÚN USUARIO
+                mssql.close();
                 return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 2:
                 conexion = _a.sent();
@@ -281,6 +311,7 @@ exports.validarDni = function (req, res) { return __awaiter(void 0, void 0, void
                 Maestro_Registrador = _a.sent();
                 mssql.close();
                 if (!(Maestro_Registrador.recordset == '')) return [3 /*break*/, 6];
+                mssql.close();
                 return [4 /*yield*/, mssql.connect(cadena_conexion)];
             case 4:
                 conexion_1 = _a.sent();
@@ -390,6 +421,38 @@ exports.restablecerPassword = function (req, res) { return __awaiter(void 0, voi
     });
 }); };
 exports.actualizarUsuario = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var usuario, datos_actualizados, resultados, conexion, script, datos;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne(req.params.dni)];
+            case 1:
+                usuario = _a.sent();
+                if (!usuario) return [3 /*break*/, 5];
+                datos_actualizados = {
+                    email: req.body.email,
+                    tipo_ambito: req.body.tipo_ambito,
+                    descripcion_ambito: req.body.descripcion_ambito,
+                    isLogged: req.body.isLogged,
+                };
+                typeorm_1.getRepository(Usuario_1.UsuariosRisc).merge(usuario, datos_actualizados);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).save(usuario)];
+            case 2:
+                resultados = _a.sent();
+                mssql.close();
+                return [4 /*yield*/, mssql.connect(cadena_conexion)];
+            case 3:
+                conexion = _a.sent();
+                script = "EXEC ASIGNAR_ROLES '" + req.body.dni + "' , '" + req.body.roles_asignados + "' , '" + req.body.roles_removidos + "'";
+                return [4 /*yield*/, mssql.query(script)];
+            case 4:
+                datos = _a.sent();
+                mssql.close();
+                return [2 /*return*/, res.json(resultados)];
+            case 5: return [2 /*return*/, res.status(404).json({ msg: "USUARIO NO ENCONTRADO" })];
+        }
+    });
+}); };
+exports.actualizarUsuarioLogged = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var usuario, resultados;
     return __generator(this, function (_a) {
         switch (_a.label) {

@@ -7,6 +7,7 @@ router.get('/usuarios', usuario_controller_1.obtenerUsuarios);
 router.get('/usuarios/:dni', usuario_controller_1.obtenerUsuario);
 router.get('/tipo_ambito/:descripcion_ambito', usuario_controller_1.obtenerTipoAmbito);
 router.get('/id_punto/:descripcion_ambito', usuario_controller_1.obtenerIdPunto);
+router.get('/roles_selectedUsuario/:dni', usuario_controller_1.obtenerRolesUsuario);
 router.post('/register', usuario_controller_1.crearUsuario);
 router.post('/login', usuario_controller_1.loginUsuario);
 router.post('/validarPassword', usuario_controller_1.validarPassword);
@@ -15,6 +16,7 @@ router.put('/descripcion_ambito', usuario_controller_1.obtenerDescripcionAmbito)
 router.put('/lista_usuarios', usuario_controller_1.obtenerListaUsuarios);
 router.put('/roles', usuario_controller_1.obtenerRoles);
 router.put('/usuarios/:dni', usuario_controller_1.actualizarUsuario);
+router.put('/usuario_logged/:dni', usuario_controller_1.actualizarUsuarioLogged);
 router.put('/changedPassword/:dni', usuario_controller_1.actualizarPassword);
 router.put('/restorePassword/:dni', usuario_controller_1.restablecerPassword);
 router.delete('/usuarios/:dni', usuario_controller_1.eliminarUsuario);

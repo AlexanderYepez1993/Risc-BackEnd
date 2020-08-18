@@ -13,7 +13,17 @@ const cadena_conexion = process.env.conexion;
 
 const SECRET_KEY = "SecretKeyRISC";
 
+export const obtenerRolesUsuario = async (req: Request, res: Response): Promise<Response> => {
+  mssql.close();
+  let conexion = await mssql.connect(cadena_conexion);
+  let script = `SELECT id_rol_risc, nombre_rol_risc, descripcion_rol_risc FROM USUARIOS_ROLES_RISC WHERE DNI = '${req.params.dni}'`;
+  const resultados = await mssql.query(script);
+  mssql.close();
+  return res.send(resultados.recordset);
+}
+
 export const obtenerRoles = async (req: Request, res: Response): Promise<Response> => {
+  mssql.close();
   let conexion = await mssql.connect(cadena_conexion);
   let script = `EXEC DEVOLVER_ROLES '${req.body.tipo_ambito_usuario}' , '${req.body.tipo_ambito_crear}' , '${req.body.roles_asignados}'`;
   const resultados = await mssql.query(script);
@@ -22,6 +32,7 @@ export const obtenerRoles = async (req: Request, res: Response): Promise<Respons
 }
 
 export const obtenerListaUsuarios = async (req: Request, res: Response): Promise<Response> => {
+  mssql.close();
   let conexion = await mssql.connect(cadena_conexion);
   let script = `EXEC DEVOLVER_LISTA_USUARIOS '${req.body.tipo_ambito}' , '${req.body.descripcion_ambito}' , '${req.body.dni}'`;
   const resultados = await mssql.query(script);
@@ -30,6 +41,7 @@ export const obtenerListaUsuarios = async (req: Request, res: Response): Promise
 }
 
 export const obtenerDescripcionAmbito = async (req: Request, res: Response): Promise<Response> => {
+  mssql.close();
   let conexion = await mssql.connect(cadena_conexion);
   let script = `EXEC DEVOLVER_DESCRIPCION_AMBITO '${req.body.tipo_ambito_usuario}' , '${req.body.descripcion_ambito_usuario}' , '${req.body.tipo_ambito_crear}'`;
   const resultados = await mssql.query(script);
@@ -49,6 +61,7 @@ export const obtenerTipoAmbito = async (req: Request, res: Response): Promise<Re
 }
 
 export const obtenerIdPunto = async (req: Request, res: Response): Promise<Response> => {
+  mssql.close();
   let conexion = await mssql.connect(cadena_conexion);
   let script = `SELECT ID_PUNTO_DIG_HIS FROM PUNTOS_DIGITACION_HIS WHERE NOMBRE = '${req.params.descripcion_ambito}'`;
   const resultados = await mssql.query(script);
@@ -99,6 +112,7 @@ export const crearUsuario = async (req: Request, res: Response): Promise<Respons
       expiresIn: expiresIn,
       estado: userData.estado,
     };
+    mssql.close();
     let conexion = await mssql.connect(cadena_conexion);
     let script = `EXEC ASIGNAR_ROLES '${req.body.dni}' , '${req.body.roles_asignados}' , '${req.body.roles_removidos}'`;
     const resultados = await mssql.query(script);
@@ -138,6 +152,7 @@ export const loginUsuario = async (req: Request, res: Response): Promise<Respons
               accessToken: accessToken,
               expiresIn: expiresIn,
             };
+            mssql.close();
             let conexion = await mssql.connect(cadena_conexion);
             let script = `EXEC DEVOLVER_ROLES_USUARIO '${req.body.dni}'`;
             const roles = await mssql.query(script);
@@ -160,11 +175,13 @@ export const validarDni = async (req: Request, res: Response): Promise<Response>
     const userData = await getRepository(UsuariosRisc).findOne({ where: { dni: req.body.dni }, });
     if (!userData) {
       //DNI NO PERTENECE A NINGÚN USUARIO
+      mssql.close();
       let conexion = await mssql.connect(cadena_conexion);
       let script = `SELECT DISTINCT APELLIDO_PATERNO, APELLIDO_MATERNO, NOMBRES FROM MST_REGISTRADOR WHERE NUMERO_DOCUMENTO = '${req.body.dni}'`;
       const Maestro_Registrador = await mssql.query(script);
       mssql.close();
       if (Maestro_Registrador.recordset == '') {
+        mssql.close();
         let conexion = await mssql.connect(cadena_conexion);
         let script = `SELECT DISTINCT APELLIDO_PATERNO, APELLIDO_MATERNO, NOMBRES FROM MST_PERSONAL WHERE NUMERO_DOCUMENTO = '${req.body.dni}'`;
         const Maestro_Personal = await mssql.query(script);
@@ -244,6 +261,27 @@ export const restablecerPassword = async (req: Request, res: Response): Promise<
 };
 
 export const actualizarUsuario = async (req: Request, res: Response): Promise<Response> => {
+  const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
+  if (usuario) {
+    const datos_actualizados = {
+      email: req.body.email,
+      tipo_ambito: req.body.tipo_ambito,
+      descripcion_ambito: req.body.descripcion_ambito,
+      isLogged: req.body.isLogged,
+    };
+    getRepository(UsuariosRisc).merge(usuario, datos_actualizados);
+    const resultados = await getRepository(UsuariosRisc).save(usuario);
+    mssql.close();
+    let conexion = await mssql.connect(cadena_conexion);
+    let script = `EXEC ASIGNAR_ROLES '${req.body.dni}' , '${req.body.roles_asignados}' , '${req.body.roles_removidos}'`;
+    const datos = await mssql.query(script);
+    mssql.close();
+    return res.json(resultados);
+  }
+  return res.status(404).json({ msg: "USUARIO NO ENCONTRADO" });
+};
+
+export const actualizarUsuarioLogged = async (req: Request, res: Response): Promise<Response> => {
   const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
   if (usuario) {
     getRepository(UsuariosRisc).merge(usuario, req.body);
