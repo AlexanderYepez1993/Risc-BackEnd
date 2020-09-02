@@ -15,6 +15,8 @@ typeorm_1.createConnection();
 app.use(cors_1.default());
 app.use(morgan_1.default('dev'));
 app.use(express_1.default.json());
+console.log(__dirname);
+app.use('/', express_1.default.static(__dirname + '/riscclien'));
 //routes
 app.use(usuario_routers_1.default);
 app.listen(3000);
