@@ -3504,7 +3504,7 @@ __webpack_require__.r(__webpack_exports__);
 const environment = {
     production: false,
     ip: "localhost",
-    ip_backend: "172.18.20.17:8084",
+    ip_backend: "172.18.20.30:8084",
 };
 /*
  * For easier debugging in development mode, you can import the following file
