@@ -3457,18 +3457,18 @@ let ControlCalidadService = class ControlCalidadService {
         this.conf = new _configuracion_configuracion__WEBPACK_IMPORTED_MODULE_3__["Configuracion"]();
     }
     ejecutarcontrol(ano, mes) {
-        return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + localStorage.getItem('pun') + '/ano/' + ano + '/mes/' + mes + '/nivel/4');
+        return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + localStorage.getItem('ID_PUNTO') + '/ano/' + ano + '/mes/' + mes + '/nivel/4');
         //this.http.get(this.conf.urlgenerarexcelcc+'punto/'+localStorage.getItem('pun')+'/ano/'+ano+'/mes/'+mes);
     }
     ;
     leercontrol(ano, mes) {
-        return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + localStorage.getItem('pun') + '/ano/' + ano + '/mes/' + mes);
+        return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + localStorage.getItem('ID_PUNTO') + '/ano/' + ano + '/mes/' + mes);
     }
     ejecutarcontrol2() {
-        return this.http.get(this.conf.urlsimple + 'controlcalidadhis/leercontrol2/' + localStorage.getItem('pun'));
+        return this.http.get(this.conf.urlsimple + 'controlcalidadhis/leercontrol2/' + localStorage.getItem('ID_PUNTO'));
     }
     descargarReporteCon2() {
-        return this.http.get(this.conf.urlsimple + 'download/file/' + localStorage.getItem('pun') + '/reporte2cc.xlsx', { responseType: 'arraybuffer' });
+        return this.http.get(this.conf.urlsimple + 'download/file/' + localStorage.getItem('ID_PUNTO') + '/reporte2cc.xlsx', { responseType: 'arraybuffer' });
     }
     descargarReporteCC(cod_ambito) {
     }

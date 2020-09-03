@@ -17,7 +17,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 console.log(__dirname)
 app.use('/', express.static(__dirname + '/riscclien'));
-app.get('/*', (req, res) => res.sendFile(path.join(__dirname)));
+app.get('/user/inicio', (req, res) => res.sendFile(path.join(__dirname + '/riscclien')));
+app.get('/home', (req, res) => res.sendFile(path.join(__dirname + '/riscclien')));
 
 //routes
 app.use(UsuarioRoutes);
