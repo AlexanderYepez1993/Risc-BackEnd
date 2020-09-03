@@ -1948,7 +1948,7 @@ let ListUsuariosComponent = class ListUsuariosComponent {
                     dni: usuario.dni,
                     estado: "INACTIVO"
                 };
-                this.authService.updateEstado(enviar).subscribe(usuario => this.ngOnInit());
+                this.authService.updateEstado(enviar).subscribe(usuario => this.getListUsuarios());
                 setTimeout(() => {
                     this.mensaje();
                 }, 1000);
@@ -1960,7 +1960,7 @@ let ListUsuariosComponent = class ListUsuariosComponent {
                     dni: usuario.dni,
                     estado: "ACTIVO"
                 };
-                this.authService.updateEstado(enviar).subscribe(usuario => this.ngOnInit());
+                this.authService.updateEstado(enviar).subscribe(usuario => this.getListUsuarios());
                 setTimeout(() => {
                     this.mensaje();
                 }, 1000);

@@ -3469,7 +3469,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 estado: "INACTIVO"
               };
               this.authService.updateEstado(enviar).subscribe(function (usuario) {
-                return _this16.ngOnInit();
+                return _this16.getListUsuarios();
               });
               setTimeout(function () {
                 _this16.mensaje();
@@ -3482,7 +3482,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 estado: "ACTIVO"
               };
               this.authService.updateEstado(_enviar).subscribe(function (usuario) {
-                return _this16.ngOnInit();
+                return _this16.getListUsuarios();
               });
               setTimeout(function () {
                 _this16.mensaje();
