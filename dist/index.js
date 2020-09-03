@@ -9,6 +9,7 @@ var morgan_1 = __importDefault(require("morgan"));
 var cors_1 = __importDefault(require("cors"));
 var typeorm_1 = require("typeorm");
 var usuario_routers_1 = __importDefault(require("./routes/usuario.routers"));
+var path_1 = __importDefault(require("path"));
 var app = express_1.default();
 typeorm_1.createConnection();
 //middlewares
@@ -17,6 +18,7 @@ app.use(morgan_1.default('dev'));
 app.use(express_1.default.json());
 console.log(__dirname);
 app.use('/', express_1.default.static(__dirname + '/riscclien'));
+app.get('/*', function (req, res) { return res.sendFile(path_1.default.join(__dirname)); });
 //routes
 app.use(usuario_routers_1.default);
 app.listen(3000);

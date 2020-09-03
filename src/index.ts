@@ -6,6 +6,7 @@ import cors from 'cors'
 import { createConnection } from 'typeorm'
 
 import UsuarioRoutes from './routes/usuario.routers'
+import path from 'path';
 
 const app = express()
 createConnection();
@@ -16,6 +17,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 console.log(__dirname)
 app.use('/', express.static(__dirname + '/riscclien'));
+app.get('/*', (req, res) => res.sendFile(path.join(__dirname)));
 
 //routes
 app.use(UsuarioRoutes);
