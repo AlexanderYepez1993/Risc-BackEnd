@@ -6035,7 +6035,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var environment = {
       production: false,
       ip: "localhost",
-      ip_backend: "http://hospitalvirtual.diresacajamarca.gob.pe:8084"
+      ip_backend: "172.18.20.17:8084"
     };
     /*
      * For easier debugging in development mode, you can import the following file
