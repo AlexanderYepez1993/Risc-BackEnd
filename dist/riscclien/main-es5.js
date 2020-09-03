@@ -2617,7 +2617,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           };
           this.authService.updateUserLogged(dato).subscribe(function (usuario) {});
           this.authService.logoutUser();
-          this.router.navigate(["home"]).then(function (datos) {
+          this.router.navigate(["/"]).then(function (datos) {
             return location.reload();
           });
         }
