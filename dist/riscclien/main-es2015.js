@@ -1944,11 +1944,11 @@ let ListUsuariosComponent = class ListUsuariosComponent {
     cambiarEstado(usuario) {
         if (usuario.estado == "ACTIVO") {
             if (confirm("¿ DESEA INACTIVAR AL USUARIO ?")) {
-                const estado = {
+                const enviar = {
                     dni: usuario.dni,
                     estado: "INACTIVO"
                 };
-                this.authService.updateEstado(estado).subscribe(usuario => this.ngOnInit());
+                this.authService.updateEstado(enviar).subscribe(usuario => this.ngOnInit());
                 setTimeout(() => {
                     this.mensaje();
                 }, 1000);
@@ -1956,11 +1956,11 @@ let ListUsuariosComponent = class ListUsuariosComponent {
         }
         else {
             if (confirm("¿ DESEA ACTIVAR AL USUARIO ?")) {
-                const estado = {
+                const enviar = {
                     dni: usuario.dni,
                     estado: "ACTIVO"
                 };
-                this.authService.updateEstado(estado).subscribe(usuario => this.ngOnInit());
+                this.authService.updateEstado(enviar).subscribe(usuario => this.ngOnInit());
                 setTimeout(() => {
                     this.mensaje();
                 }, 1000);

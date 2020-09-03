@@ -3464,11 +3464,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (usuario.estado == "ACTIVO") {
             if (confirm("¿ DESEA INACTIVAR AL USUARIO ?")) {
-              var estado = {
+              var enviar = {
                 dni: usuario.dni,
                 estado: "INACTIVO"
               };
-              this.authService.updateEstado(estado).subscribe(function (usuario) {
+              this.authService.updateEstado(enviar).subscribe(function (usuario) {
                 return _this16.ngOnInit();
               });
               setTimeout(function () {
@@ -3477,11 +3477,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           } else {
             if (confirm("¿ DESEA ACTIVAR AL USUARIO ?")) {
-              var _estado = {
+              var _enviar = {
                 dni: usuario.dni,
                 estado: "ACTIVO"
               };
-              this.authService.updateEstado(_estado).subscribe(function (usuario) {
+              this.authService.updateEstado(_enviar).subscribe(function (usuario) {
                 return _this16.ngOnInit();
               });
               setTimeout(function () {

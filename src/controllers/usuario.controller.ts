@@ -264,6 +264,7 @@ export const actualizarEstado = async (req: Request, res: Response): Promise<Res
   const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
   if (usuario) {
     const datos_actualizados = {
+      dni: req.body.dni,
       estado: req.body.estado,
     };
     getRepository(UsuariosRisc).merge(usuario, datos_actualizados);
