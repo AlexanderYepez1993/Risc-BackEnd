@@ -18,7 +18,8 @@ app.use(morgan_1.default('dev'));
 app.use(express_1.default.json());
 console.log(__dirname);
 app.use('/', express_1.default.static(__dirname + '/riscclien'));
-app.get('/*', function (req, res) { return res.sendFile(path_1.default.join(__dirname)); });
+app.get('/user/inicio', function (req, res) { return res.sendFile(path_1.default.join(__dirname + '/riscclien')); });
+app.get('/home', function (req, res) { return res.sendFile(path_1.default.join(__dirname + '/riscclien')); });
 //routes
 app.use(usuario_routers_1.default);
 app.listen(3000);

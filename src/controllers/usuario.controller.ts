@@ -260,6 +260,19 @@ export const restablecerPassword = async (req: Request, res: Response): Promise<
   }
 };
 
+export const actualizarEstado = async (req: Request, res: Response): Promise<Response> => {
+  const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
+  if (usuario) {
+    const datos_actualizados = {
+      estado: req.body.estado,
+    };
+    getRepository(UsuariosRisc).merge(usuario, datos_actualizados);
+    const resultados = await getRepository(UsuariosRisc).save(usuario);
+    return res.json(resultados);
+  }
+  return res.status(404).json({ msg: "USUARIO NO ENCONTRADO" });
+};
+
 export const actualizarUsuario = async (req: Request, res: Response): Promise<Response> => {
   const usuario = await getRepository(UsuariosRisc).findOne(req.params.dni);
   if (usuario) {

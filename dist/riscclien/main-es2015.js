@@ -1948,7 +1948,7 @@ let ListUsuariosComponent = class ListUsuariosComponent {
                     dni: usuario.dni,
                     estado: "INACTIVO"
                 };
-                this.authService.updateUser(estado).subscribe(usuario => this.ngOnInit());
+                this.authService.updateEstado(estado).subscribe(usuario => this.ngOnInit());
                 setTimeout(() => {
                     this.mensaje();
                 }, 1000);
@@ -1960,7 +1960,7 @@ let ListUsuariosComponent = class ListUsuariosComponent {
                     dni: usuario.dni,
                     estado: "ACTIVO"
                 };
-                this.authService.updateUser(estado).subscribe(usuario => this.ngOnInit());
+                this.authService.updateEstado(estado).subscribe(usuario => this.ngOnInit());
                 setTimeout(() => {
                     this.mensaje();
                 }, 1000);
@@ -3287,6 +3287,9 @@ let AuthService = class AuthService {
     }
     registerUser(user) {
         return this.httpClient.post(`${this.AUTH_SERVER}/register`, user);
+    }
+    updateEstado(user) {
+        return this.httpClient.put(`${this.AUTH_SERVER}/actualizar_estado/${user.dni}`, user);
     }
     updateUser(user) {
         return this.httpClient.put(`${this.AUTH_SERVER}/usuarios/${user.dni}`, user);

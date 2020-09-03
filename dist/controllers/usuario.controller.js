@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarUsuario = exports.actualizarUsuarioLogged = exports.actualizarUsuario = exports.restablecerPassword = exports.actualizarPassword = exports.validarPassword = exports.validarDni = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerIdPunto = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = exports.obtenerListaUsuarios = exports.obtenerRoles = exports.obtenerRolesUsuario = void 0;
+exports.eliminarUsuario = exports.actualizarUsuarioLogged = exports.actualizarUsuario = exports.actualizarEstado = exports.restablecerPassword = exports.actualizarPassword = exports.validarPassword = exports.validarDni = exports.loginUsuario = exports.crearUsuario = exports.obtenerUsuario = exports.obtenerUsuarios = exports.obtenerIdPunto = exports.obtenerTipoAmbito = exports.obtenerDescripcionAmbito = exports.obtenerListaUsuarios = exports.obtenerRoles = exports.obtenerRolesUsuario = void 0;
 var typeorm_1 = require("typeorm");
 var Usuario_1 = require("../entity/Usuario");
 var Tipo_Ambito_1 = require("../entity/Tipo_Ambito");
@@ -417,6 +417,26 @@ exports.restablecerPassword = function (req, res) { return __awaiter(void 0, voi
             case 3:
                 resultados = _a.sent();
                 return [2 /*return*/, res.json(resultados)];
+        }
+    });
+}); };
+exports.actualizarEstado = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var usuario, datos_actualizados, resultados;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).findOne(req.params.dni)];
+            case 1:
+                usuario = _a.sent();
+                if (!usuario) return [3 /*break*/, 3];
+                datos_actualizados = {
+                    estado: req.body.estado,
+                };
+                typeorm_1.getRepository(Usuario_1.UsuariosRisc).merge(usuario, datos_actualizados);
+                return [4 /*yield*/, typeorm_1.getRepository(Usuario_1.UsuariosRisc).save(usuario)];
+            case 2:
+                resultados = _a.sent();
+                return [2 /*return*/, res.json(resultados)];
+            case 3: return [2 /*return*/, res.status(404).json({ msg: "USUARIO NO ENCONTRADO" })];
         }
     });
 }); };

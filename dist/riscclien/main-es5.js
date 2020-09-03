@@ -3468,7 +3468,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 dni: usuario.dni,
                 estado: "INACTIVO"
               };
-              this.authService.updateUser(estado).subscribe(function (usuario) {
+              this.authService.updateEstado(estado).subscribe(function (usuario) {
                 return _this16.ngOnInit();
               });
               setTimeout(function () {
@@ -3481,7 +3481,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 dni: usuario.dni,
                 estado: "ACTIVO"
               };
-              this.authService.updateUser(_estado).subscribe(function (usuario) {
+              this.authService.updateEstado(_estado).subscribe(function (usuario) {
                 return _this16.ngOnInit();
               });
               setTimeout(function () {
@@ -5685,6 +5685,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         key: "registerUser",
         value: function registerUser(user) {
           return this.httpClient.post("".concat(this.AUTH_SERVER, "/register"), user);
+        }
+      }, {
+        key: "updateEstado",
+        value: function updateEstado(user) {
+          return this.httpClient.put("".concat(this.AUTH_SERVER, "/actualizar_estado/").concat(user.dni), user);
         }
       }, {
         key: "updateUser",

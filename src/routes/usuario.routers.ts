@@ -4,7 +4,7 @@ const router = Router()
 import {
     obtenerUsuarios, crearUsuario, obtenerUsuario, actualizarUsuario, eliminarUsuario, loginUsuario, obtenerTipoAmbito,
     obtenerDescripcionAmbito, actualizarPassword, validarPassword, obtenerIdPunto, validarDni, obtenerListaUsuarios,
-    restablecerPassword, obtenerRoles, obtenerRolesUsuario, actualizarUsuarioLogged
+    restablecerPassword, obtenerRoles, obtenerRolesUsuario, actualizarUsuarioLogged, actualizarEstado
 } from '../controllers/usuario.controller';
 
 router.get('/usuarios', obtenerUsuarios);
@@ -20,6 +20,7 @@ router.put('/descripcion_ambito', obtenerDescripcionAmbito);
 router.put('/lista_usuarios', obtenerListaUsuarios);
 router.put('/roles', obtenerRoles);
 router.put('/usuarios/:dni', actualizarUsuario);
+router.put('/actualizar_estado/:dni', actualizarEstado);
 router.put('/usuario_logged/:dni', actualizarUsuarioLogged);
 router.put('/changedPassword/:dni', actualizarPassword);
 router.put('/restorePassword/:dni', restablecerPassword);
