@@ -3501,7 +3501,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               passwordNuevo: usuario.dni
             };
             this.authService.restorePassword(enviar).subscribe(function (usuario) {
-              return _this17.ngOnInit();
+              return _this17.getListUsuarios();
             });
             setTimeout(function () {
               _this17.mensaje();

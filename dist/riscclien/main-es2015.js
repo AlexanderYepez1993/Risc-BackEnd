@@ -1973,7 +1973,7 @@ let ListUsuariosComponent = class ListUsuariosComponent {
                 dni: usuario.dni,
                 passwordNuevo: usuario.dni,
             };
-            this.authService.restorePassword(enviar).subscribe(usuario => this.ngOnInit());
+            this.authService.restorePassword(enviar).subscribe(usuario => this.getListUsuarios());
             setTimeout(() => {
                 this.mensaje();
             }, 1000);
