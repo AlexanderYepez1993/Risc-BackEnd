@@ -5972,22 +5972,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(ControlCalidadService, [{
         key: "ejecutarcontrol",
         value: function ejecutarcontrol(ano, mes) {
-          return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + localStorage.getItem('ID_PUNTO') + '/ano/' + ano + '/mes/' + mes + '/nivel/4'); //this.http.get(this.conf.urlgenerarexcelcc+'punto/'+localStorage.getItem('pun')+'/ano/'+ano+'/mes/'+mes);
+          return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + localStorage.getItem("ID_PUNTO") + '/ano/' + ano + '/mes/' + mes + '/nivel/4'); //this.http.get(this.conf.urlgenerarexcelcc+'punto/'+localStorage.getItem('pun')+'/ano/'+ano+'/mes/'+mes);
         }
       }, {
         key: "leercontrol",
         value: function leercontrol(ano, mes) {
-          return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + localStorage.getItem('ID_PUNTO') + '/ano/' + ano + '/mes/' + mes);
+          return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + localStorage.getItem("ID_PUNTO") + '/ano/' + ano + '/mes/' + mes);
         }
       }, {
         key: "ejecutarcontrol2",
         value: function ejecutarcontrol2() {
-          return this.http.get(this.conf.urlsimple + 'controlcalidadhis/leercontrol2/' + localStorage.getItem('ID_PUNTO'));
+          return this.http.get(this.conf.urlsimple + 'controlcalidadhis/leercontrol2/' + localStorage.getItem("ID_PUNTO"));
         }
       }, {
         key: "descargarReporteCon2",
         value: function descargarReporteCon2() {
-          return this.http.get(this.conf.urlsimple + 'download/file/' + localStorage.getItem('ID_PUNTO') + '/reporte2cc.xlsx', {
+          return this.http.get(this.conf.urlsimple + 'download/file/' + localStorage.getItem("ID_PUNTO") + '/reporte2cc.xlsx', {
             responseType: 'arraybuffer'
           });
         }
