@@ -267,7 +267,9 @@ export const actualizarEstado = async (req: Request, res: Response): Promise<Res
       dni: req.body.dni,
       estado: req.body.estado,
     };
+    console.log("HASTA AQUI LLEGO 2.0");
     getRepository(UsuariosRisc).merge(usuario, datos_actualizados);
+    console.log("HASTA AQUI LLEGO 4.0");
     const resultados = await getRepository(UsuariosRisc).save(usuario);
     return res.json(resultados);
   }

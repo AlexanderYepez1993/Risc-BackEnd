@@ -1960,7 +1960,11 @@ let ListUsuariosComponent = class ListUsuariosComponent {
                     dni: usuario.dni,
                     estado: "ACTIVO"
                 };
-                this.authService.updateEstado(enviar).subscribe(usuario => this.getListUsuarios());
+                console.log("HASTA AQUI LLEGO 1.0");
+                this.authService.updateEstado(enviar).subscribe(usuario => {
+                    console.log("HASTA AQUI LLEGO 3.0");
+                    this.getListUsuarios();
+                });
                 setTimeout(() => {
                     this.mensaje();
                 }, 1000);

@@ -3481,8 +3481,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 dni: usuario.dni,
                 estado: "ACTIVO"
               };
+              console.log("HASTA AQUI LLEGO 1.0");
               this.authService.updateEstado(_enviar).subscribe(function (usuario) {
-                return _this16.getListUsuarios();
+                console.log("HASTA AQUI LLEGO 3.0");
+
+                _this16.getListUsuarios();
               });
               setTimeout(function () {
                 _this16.mensaje();
