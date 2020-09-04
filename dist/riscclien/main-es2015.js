@@ -3464,11 +3464,13 @@ let ControlCalidadService = class ControlCalidadService {
         this.conf = new _configuracion_configuracion__WEBPACK_IMPORTED_MODULE_3__["Configuracion"]();
     }
     ejecutarcontrol(ano, mes) {
+        console.log(localStorage.getItem("ID_PUNTO"));
         return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + localStorage.getItem("ID_PUNTO") + '/ano/' + ano + '/mes/' + mes + '/nivel/4');
         //this.http.get(this.conf.urlgenerarexcelcc+'punto/'+localStorage.getItem('pun')+'/ano/'+ano+'/mes/'+mes);
     }
     ;
     leercontrol(ano, mes) {
+        console.log(localStorage.getItem("ID_PUNTO"));
         return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + localStorage.getItem("ID_PUNTO") + '/ano/' + ano + '/mes/' + mes);
     }
     ejecutarcontrol2() {

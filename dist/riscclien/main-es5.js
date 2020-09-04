@@ -5972,11 +5972,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(ControlCalidadService, [{
         key: "ejecutarcontrol",
         value: function ejecutarcontrol(ano, mes) {
+          console.log(localStorage.getItem("ID_PUNTO"));
           return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + localStorage.getItem("ID_PUNTO") + '/ano/' + ano + '/mes/' + mes + '/nivel/4'); //this.http.get(this.conf.urlgenerarexcelcc+'punto/'+localStorage.getItem('pun')+'/ano/'+ano+'/mes/'+mes);
         }
       }, {
         key: "leercontrol",
         value: function leercontrol(ano, mes) {
+          console.log(localStorage.getItem("ID_PUNTO"));
           return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + localStorage.getItem("ID_PUNTO") + '/ano/' + ano + '/mes/' + mes);
         }
       }, {
