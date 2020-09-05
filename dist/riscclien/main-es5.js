@@ -5765,7 +5765,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var user_string = JSON.stringify(user);
           localStorage.setItem("CURRENT_USER", user_string);
           localStorage.removeItem("pun");
-          localStorage.removeItem("punto");
+          localStorage.removeItem("punt_nombre");
         }
       }, {
         key: "getCurrentUser",
