@@ -1739,23 +1739,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var src_app_servicios_columnascc_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
     /*! src/app/servicios/columnascc.service */
     "./src/app/servicios/columnascc.service.ts");
-    /* harmony import */
-
-
-    var src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
-    /*! src/app/servicios/auth.service */
-    "./src/app/servicios/auth.service.ts");
 
     var CargasHisComponent =
     /*#__PURE__*/
     function () {
-      function CargasHisComponent(mensajes, rout, controlhis, authService, colmnas) {
+      function CargasHisComponent(mensajes, rout, controlhis, colmnas) {
         _classCallCheck(this, CargasHisComponent);
 
         this.mensajes = mensajes;
         this.rout = rout;
         this.controlhis = controlhis;
-        this.authService = authService;
         this.colmnas = colmnas;
         this.punto = '192';
         this.ano = '2020';
@@ -1774,18 +1767,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.registrosRep = '0';
         this.registrosPerc = '0';
         this.config = new src_app_configuracion_configuracion__WEBPACK_IMPORTED_MODULE_2__["Configuracion"]();
-        this.aux = this.authService.getCurrentUser();
       }
 
       _createClass(CargasHisComponent, [{
         key: "ngOnInit",
-        value: function ngOnInit() {
-          var _this3 = this;
-
-          this.authService.getIdPunto(this.aux.descripcion_ambito).subscribe(function (datos) {
-            _this3.punto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
-          });
-        }
+        value: function ngOnInit() {}
         /**
          * selecionarArchivo
          */
@@ -1793,7 +1779,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "seleccionarArchivo",
         value: function seleccionarArchivo() {
-          /* this.punto = localStorage.getItem("ID_PUNTO"); */
+          this.punto = localStorage.getItem("ID_PUNTO");
           this.urlPac = this.config.url + 'paciente/punto/' + this.punto + '/ano/' + this.ano + '/mes/' + this.mes;
           this.urlPer = this.config.url + 'personal/punto/' + this.punto + '/ano/' + this.ano + '/mes/' + this.mes;
           this.urlReg = this.config.url + 'registrador/punto/' + this.punto + '/ano/' + this.ano + '/mes/' + this.mes;
@@ -1894,24 +1880,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "llamar_control_his",
         value: function llamar_control_his() {
-          var _this4 = this;
+          var _this3 = this;
 
           this.muestraControl = true; //this.controlhis.ejecutarcontrol(this.ano,this.mes).subscribe((datos)=>{console.log(datos)});
 
           this.colmnas.devolvercolumnas().subscribe(function (datos) {
             console.log(datos);
-            _this4.cols = datos.cols;
+            _this3.cols = datos.cols;
           }); //  this.controlhis.ejecutarcontrol(this.ano,this.mes);
         }
       }, {
         key: "llamar_control_his2",
         value: function llamar_control_his2() {
-          var _this5 = this;
+          var _this4 = this;
 
           this.controlhis.ejecutarcontrol2().subscribe(function (datos) {
             console.log(datos.respuesta);
 
-            _this5.controlhis.descargarReporteCon2().subscribe(function (datos2) {
+            _this4.controlhis.descargarReporteCon2().subscribe(function (datos2) {
               __webpack_require__.e(
               /*! import() | file-saver */
               "file-saver").then(__webpack_require__.t.bind(null,
@@ -1933,7 +1919,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "iniciarcontrol",
         value: function iniciarcontrol() {
-          var _this6 = this;
+          var _this5 = this;
 
           this.registroscc = [];
           this.verespinner = true;
@@ -1941,28 +1927,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.controlhis.ejecutarcontrol(this.ano, this.mes).subscribe(function (datos) {
             console.log(datos);
 
-            _this6.controlhis.leercontrol(_this6.ano, _this6.mes).subscribe(function (datos) {
+            _this5.controlhis.leercontrol(_this5.ano, _this5.mes).subscribe(function (datos) {
               console.log(datos.respuesta);
-              _this6.registroscc = datos.respuesta;
-              _this6.verespinner = false;
-              _this6.biccdisabled = true;
-              _this6.bee.disabled = false;
-              _this6.muestraconfirmacion = true;
+              _this5.registroscc = datos.respuesta;
+              _this5.verespinner = false;
+              _this5.biccdisabled = true;
+              _this5.bee.disabled = false;
+              _this5.muestraconfirmacion = true;
             }, function (error) {
-              _this6.verespinner = false;
-              _this6.biccdisabled = false;
-              _this6.bee.disabled = false;
+              _this5.verespinner = false;
+              _this5.biccdisabled = false;
+              _this5.bee.disabled = false;
             });
           }, function (error) {
-            _this6.verespinner = false;
-            _this6.biccdisabled = false;
-            _this6.bee.disabled = false;
+            _this5.verespinner = false;
+            _this5.biccdisabled = false;
+            _this5.bee.disabled = false;
           });
         }
       }, {
         key: "exportExcel",
         value: function exportExcel() {
-          var _this7 = this;
+          var _this6 = this;
 
           this.bee.disabled = true;
 
@@ -1971,7 +1957,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           "xlsx").then(__webpack_require__.t.bind(null,
           /*! xlsx */
           "./node_modules/xlsx/xlsx.js", 7)).then(function (xlsx) {
-            var worksheet = xlsx.utils.json_to_sheet(_this7.registroscc);
+            var worksheet = xlsx.utils.json_to_sheet(_this6.registroscc);
             var workbook = {
               Sheets: {
                 'data': worksheet
@@ -1983,7 +1969,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               type: 'array'
             });
 
-            _this7.saveAsExcelFile(excelBuffer, "REPORTE_CONTROL_CALIDAD");
+            _this6.saveAsExcelFile(excelBuffer, "REPORTE_CONTROL_CALIDAD");
           });
         }
       }, {
@@ -2020,8 +2006,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["ActivatedRoute"]
       }, {
         type: src_app_servicios_control_calidad_service__WEBPACK_IMPORTED_MODULE_5__["ControlCalidadService"]
-      }, {
-        type: src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_7__["AuthService"]
       }, {
         type: src_app_servicios_columnascc_service__WEBPACK_IMPORTED_MODULE_6__["ColumnasccService"]
       }];
@@ -2961,17 +2945,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "validarPassword",
         value: function validarPassword() {
-          var _this8 = this;
+          var _this7 = this;
 
           if (this.datos.passwordNuevo == this.datos.replyPassword) {
             this.authService.updatePassword(this.datos).subscribe(function (usuario) {
-              _this8.msgSuccess = "CONTRASEÑA ACTUALIZADA";
+              _this7.msgSuccess = "CONTRASEÑA ACTUALIZADA";
 
-              _this8.onMsgSuccess();
+              _this7.onMsgSuccess();
             }, function (res) {
-              _this8.msgError = res.error.message;
+              _this7.msgError = res.error.message;
 
-              _this8.onIsError();
+              _this7.onIsError();
             });
             this.router.navigate(["user/inicio"]).then(function (datos) {
               location.reload();
@@ -2984,25 +2968,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "onIsError",
         value: function onIsError() {
-          var _this9 = this;
+          var _this8 = this;
 
           this.isError = true;
           setTimeout(function () {
-            _this9.isError = false;
-            _this9.datos.passwordNuevo = '';
-            _this9.datos.replyPassword = '';
+            _this8.isError = false;
+            _this8.datos.passwordNuevo = '';
+            _this8.datos.replyPassword = '';
           }, 3000);
         }
       }, {
         key: "onMsgSuccess",
         value: function onMsgSuccess() {
-          var _this10 = this;
+          var _this9 = this;
 
           this.isSuccess = true;
           setTimeout(function () {
-            _this10.isSuccess = false;
-            _this10.datos.passwordNuevo = '';
-            _this10.datos.replyPassword = '';
+            _this9.isSuccess = false;
+            _this9.datos.passwordNuevo = '';
+            _this9.datos.replyPassword = '';
           }, 2000);
         }
       }]);
@@ -3148,6 +3132,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(ListUsuariosComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
+          var _this10 = this;
+
+          var enviar = {
+            tipo_ambito: this.aux.tipo_ambito,
+            descripcion_ambito: this.aux.descripcion_ambito,
+            dni: this.aux.dni
+          };
+          this.authService.getlistaUsuarios(enviar).subscribe(function (usuarios) {
+            _this10.usuarios = usuarios;
+
+            _this10.authService.getTipoAmbito(_this10.aux.tipo_ambito).subscribe(function (tipo_ambito) {
+              _this10.tipos_ambito = tipo_ambito;
+              var datos = {
+                tipo_ambito_usuario: _this10.aux.tipo_ambito,
+                descripcion_ambito_usuario: _this10.aux.descripcion_ambito,
+                tipo_ambito_crear: _this10.aux.tipo_ambito
+              };
+
+              _this10.authService.getDescripcionAmbito(datos).subscribe(function (datos) {
+                _this10.descripcionAmbito = datos;
+
+                _this10.authService.getRoles(_this10.datos).subscribe(function (roles) {
+                  _this10.roles = roles;
+                });
+              });
+            });
+          });
+        }
+      }, {
+        key: "getListUsuarios",
+        value: function getListUsuarios() {
           var _this11 = this;
 
           var enviar = {
@@ -3157,43 +3172,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           };
           this.authService.getlistaUsuarios(enviar).subscribe(function (usuarios) {
             _this11.usuarios = usuarios;
-
-            _this11.authService.getTipoAmbito(_this11.aux.tipo_ambito).subscribe(function (tipo_ambito) {
-              _this11.tipos_ambito = tipo_ambito;
-              var datos = {
-                tipo_ambito_usuario: _this11.aux.tipo_ambito,
-                descripcion_ambito_usuario: _this11.aux.descripcion_ambito,
-                tipo_ambito_crear: _this11.aux.tipo_ambito
-              };
-
-              _this11.authService.getDescripcionAmbito(datos).subscribe(function (datos) {
-                _this11.descripcionAmbito = datos;
-
-                _this11.authService.getRoles(_this11.datos).subscribe(function (roles) {
-                  _this11.roles = roles;
-                });
-              });
-            });
-          });
-        }
-      }, {
-        key: "getListUsuarios",
-        value: function getListUsuarios() {
-          var _this12 = this;
-
-          var enviar = {
-            tipo_ambito: this.aux.tipo_ambito,
-            descripcion_ambito: this.aux.descripcion_ambito,
-            dni: this.aux.dni
-          };
-          this.authService.getlistaUsuarios(enviar).subscribe(function (usuarios) {
-            _this12.usuarios = usuarios;
           });
         }
       }, {
         key: "onPreUpdate",
         value: function onPreUpdate(usuario) {
-          var _this13 = this;
+          var _this12 = this;
 
           this.authService.selectedUsuario = Object.assign({}, usuario);
           var datos = {
@@ -3202,45 +3186,45 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             tipo_ambito_crear: this.authService.selectedUsuario.tipo_ambito
           };
           this.authService.getDescripcionAmbito(datos).subscribe(function (datos) {
-            _this13.descripcionAmbito = datos;
+            _this12.descripcionAmbito = datos;
 
-            _this13.authService.getRoles_SelectedUsuario(_this13.authService.selectedUsuario.dni).subscribe(function (res) {
-              _this13.roles_seleccionados = [];
-              _this13.roles_selectedUsuario = '';
-              _this13.roles_backEnd = [];
+            _this12.authService.getRoles_SelectedUsuario(_this12.authService.selectedUsuario.dni).subscribe(function (res) {
+              _this12.roles_seleccionados = [];
+              _this12.roles_selectedUsuario = '';
+              _this12.roles_backEnd = [];
 
               for (var i = 0; i < Object.keys(res).length; i++) {
-                _this13.roles_seleccionados.push(res[i]);
+                _this12.roles_seleccionados.push(res[i]);
               }
 
               ;
 
-              for (var i = 0; i < _this13.roles_seleccionados.length; i++) {
-                if (_this13.roles_selectedUsuario == '') {
-                  _this13.roles_backEnd.push(_this13.roles_seleccionados[i].id_rol_risc);
+              for (var i = 0; i < _this12.roles_seleccionados.length; i++) {
+                if (_this12.roles_selectedUsuario == '') {
+                  _this12.roles_backEnd.push(_this12.roles_seleccionados[i].id_rol_risc);
 
-                  _this13.roles_selectedUsuario = _this13.roles_selectedUsuario + _this13.roles_seleccionados[i].id_rol_risc;
+                  _this12.roles_selectedUsuario = _this12.roles_selectedUsuario + _this12.roles_seleccionados[i].id_rol_risc;
                 } else {
-                  _this13.roles_backEnd.push(_this13.roles_seleccionados[i].id_rol_risc);
+                  _this12.roles_backEnd.push(_this12.roles_seleccionados[i].id_rol_risc);
 
-                  _this13.roles_selectedUsuario = _this13.roles_selectedUsuario + ',' + _this13.roles_seleccionados[i].id_rol_risc;
+                  _this12.roles_selectedUsuario = _this12.roles_selectedUsuario + ',' + _this12.roles_seleccionados[i].id_rol_risc;
                 }
               }
 
               ;
-              _this13.roles_asignados = [];
-              _this13.roles_toRemove = [];
-              _this13.datos.tipo_ambito_crear = _this13.authService.selectedUsuario.tipo_ambito;
-              _this13.datos.roles_asignados = _this13.roles_selectedUsuario;
+              _this12.roles_asignados = [];
+              _this12.roles_toRemove = [];
+              _this12.datos.tipo_ambito_crear = _this12.authService.selectedUsuario.tipo_ambito;
+              _this12.datos.roles_asignados = _this12.roles_selectedUsuario;
 
-              _this13.obtenerRoles();
+              _this12.obtenerRoles();
             });
           });
         }
       }, {
         key: "onUpdateUsuario",
         value: function onUpdateUsuario(usuarioForm) {
-          var _this14 = this;
+          var _this13 = this;
 
           if (this.roles_asignados.length == 0) {
             this.rolesAsignados = '';
@@ -3322,18 +3306,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             roles_removidos: this.rolesRemovidos
           };
           this.authService.updateUser(datoActualizado).subscribe(function (usuario) {
-            return _this14.getListUsuarios();
+            return _this13.getListUsuarios();
           });
           document.getElementById("nav-home-tab").click();
           document.getElementById("btnCerrar").click();
           setTimeout(function () {
-            _this14.mensaje();
+            _this13.mensaje();
           }, 1000);
         }
       }, {
         key: "devuelveDescripcionAmbito",
         value: function devuelveDescripcionAmbito() {
-          var _this15 = this;
+          var _this14 = this;
 
           var datos = {
             tipo_ambito_usuario: this.aux.tipo_ambito,
@@ -3341,23 +3325,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             tipo_ambito_crear: this.authService.selectedUsuario.tipo_ambito
           };
           this.authService.getDescripcionAmbito(datos).subscribe(function (datos) {
-            _this15.descripcionAmbito = datos;
-            _this15.datos.tipo_ambito_crear = _this15.authService.selectedUsuario.tipo_ambito;
-            _this15.rolesAsignados = '';
-            _this15.rolesRemovidos = '';
-            _this15.datos.roles_asignados = '';
-            _this15.roles_seleccionados = [];
+            _this14.descripcionAmbito = datos;
+            _this14.datos.tipo_ambito_crear = _this14.authService.selectedUsuario.tipo_ambito;
+            _this14.rolesAsignados = '';
+            _this14.rolesRemovidos = '';
+            _this14.datos.roles_asignados = '';
+            _this14.roles_seleccionados = [];
 
-            _this15.obtenerRoles();
+            _this14.obtenerRoles();
           });
         }
       }, {
         key: "obtenerRoles",
         value: function obtenerRoles() {
-          var _this16 = this;
+          var _this15 = this;
 
           this.authService.getRoles(this.datos).subscribe(function (roles) {
-            _this16.roles = roles;
+            _this15.roles = roles;
           });
         }
       }, {
@@ -3476,7 +3460,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "cambiarEstado",
         value: function cambiarEstado(usuario) {
-          var _this17 = this;
+          var _this16 = this;
 
           if (usuario.estado == "ACTIVO") {
             if (confirm("¿ DESEA INACTIVAR AL USUARIO ?")) {
@@ -3485,10 +3469,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 estado: "INACTIVO"
               };
               this.authService.updateEstado(enviar).subscribe(function (usuario) {
-                return _this17.getListUsuarios();
+                return _this16.getListUsuarios();
               });
               setTimeout(function () {
-                _this17.mensaje();
+                _this16.mensaje();
               }, 1000);
             }
           } else {
@@ -3501,10 +3485,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               this.authService.updateEstado(_enviar).subscribe(function (usuario) {
                 console.log("HASTA AQUI LLEGO 3.0");
 
-                _this17.getListUsuarios();
+                _this16.getListUsuarios();
               });
               setTimeout(function () {
-                _this17.mensaje();
+                _this16.mensaje();
               }, 1000);
             }
           }
@@ -3512,7 +3496,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "restablecerPassword",
         value: function restablecerPassword(usuario) {
-          var _this18 = this;
+          var _this17 = this;
 
           if (confirm("¿ DESEA RESTABLECER LA CONTRASEÑA DEL USUARIO ?")) {
             var enviar = {
@@ -3520,10 +3504,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               passwordNuevo: usuario.dni
             };
             this.authService.restorePassword(enviar).subscribe(function (usuario) {
-              return _this18.getListUsuarios();
+              return _this17.getListUsuarios();
             });
             setTimeout(function () {
-              _this18.mensaje();
+              _this17.mensaje();
             }, 1000);
           }
         }
@@ -3539,21 +3523,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "onIsError",
         value: function onIsError() {
-          var _this19 = this;
+          var _this18 = this;
 
           this.isError = true;
           setTimeout(function () {
-            _this19.isError = false;
+            _this18.isError = false;
           }, 3000);
         }
       }, {
         key: "onMsgSuccess",
         value: function onMsgSuccess() {
-          var _this20 = this;
+          var _this19 = this;
 
           this.isSuccess = true;
           setTimeout(function () {
-            _this20.isSuccess = false;
+            _this19.isSuccess = false;
           }, 3000);
         }
       }]);
@@ -3692,36 +3676,36 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "onLogin",
         value: function onLogin(form) {
-          var _this21 = this;
+          var _this20 = this;
 
           if (form.valid) {
             return this.authService.login(this.user).subscribe(function (data) {
               var dato = {
-                dni: _this21.user.dni,
+                dni: _this20.user.dni,
                 isLogged: "1"
               };
 
-              _this21.authService.updateUserLogged(dato).subscribe(function (usuario) {});
+              _this20.authService.updateUserLogged(dato).subscribe(function (usuario) {});
 
-              _this21.authService.validarPassword(_this21.user).subscribe(function (validacion) {}, function (res) {
-                _this21.msgError = res.error.message;
+              _this20.authService.validarPassword(_this20.user).subscribe(function (validacion) {}, function (res) {
+                _this20.msgError = res.error.message;
 
-                if (_this21.msgError == "CONTRASEÑA SIN ACTUALIZAR") {
-                  _this21.onIsError();
+                if (_this20.msgError == "CONTRASEÑA SIN ACTUALIZAR") {
+                  _this20.onIsError();
 
                   setTimeout(function () {
-                    _this21.router.navigate(["user/changePassword"]);
+                    _this20.router.navigate(["user/changePassword"]);
                   }, 2000);
                 } else {
-                  _this21.router.navigate(["user/inicio"]).then(function (datos) {
+                  _this20.router.navigate(["user/inicio"]).then(function (datos) {
                     return location.reload();
                   });
                 }
               });
             }, function (res) {
-              _this21.msgError = res.error.message;
+              _this20.msgError = res.error.message;
 
-              _this21.onIsError();
+              _this20.onIsError();
             });
           } else {
             this.onIsError();
@@ -3731,11 +3715,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "onIsError",
         value: function onIsError() {
-          var _this22 = this;
+          var _this21 = this;
 
           this.isError = true;
           setTimeout(function () {
-            _this22.isError = false;
+            _this21.isError = false;
           }, 2000);
         }
       }, {
@@ -3871,17 +3855,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "validarPassword",
         value: function validarPassword() {
-          var _this23 = this;
+          var _this22 = this;
 
           if (this.datos.passwordNuevo == this.datos.replyPassword) {
             this.authService.updatePassword(this.datos).subscribe(function (usuario) {
-              _this23.msgSuccess = "CONTRASEÑA ACTUALIZADA";
+              _this22.msgSuccess = "CONTRASEÑA ACTUALIZADA";
 
-              _this23.onMsgSuccess();
+              _this22.onMsgSuccess();
             }, function (res) {
-              _this23.msgError = res.error.message;
+              _this22.msgError = res.error.message;
 
-              _this23.onIsError();
+              _this22.onIsError();
             });
           } else {
             this.msgError = "LOS DATOS INGRESADOS NO COINCIDEN";
@@ -3891,30 +3875,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "onIsError",
         value: function onIsError() {
-          var _this24 = this;
+          var _this23 = this;
 
           this.isError = true;
           setTimeout(function () {
-            _this24.isError = false;
-            _this24.datos.passwordAntiguo = '';
-            _this24.datos.passwordNuevo = '';
-            _this24.datos.replyPassword = '';
+            _this23.isError = false;
+            _this23.datos.passwordAntiguo = '';
+            _this23.datos.passwordNuevo = '';
+            _this23.datos.replyPassword = '';
           }, 3000);
         }
       }, {
         key: "onMsgSuccess",
         value: function onMsgSuccess() {
-          var _this25 = this;
+          var _this24 = this;
 
           this.isSuccess = true;
           setTimeout(function () {
-            _this25.isSuccess = false;
+            _this24.isSuccess = false;
 
-            _this25.btnCerrar.nativeElement.click();
+            _this24.btnCerrar.nativeElement.click();
 
-            _this25.datos.passwordAntiguo = '';
-            _this25.datos.passwordNuevo = '';
-            _this25.datos.replyPassword = '';
+            _this24.datos.passwordAntiguo = '';
+            _this24.datos.passwordNuevo = '';
+            _this24.datos.replyPassword = '';
           }, 2000);
         }
       }, {
@@ -4083,21 +4067,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(RegisterComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this26 = this;
+          var _this25 = this;
 
           this.authService.getTipoAmbito(this.aux.tipo_ambito).subscribe(function (tipo_ambito) {
-            _this26.tipos_ambito = tipo_ambito;
+            _this25.tipos_ambito = tipo_ambito;
             var datos = {
-              tipo_ambito_usuario: _this26.aux.tipo_ambito,
-              descripcion_ambito_usuario: _this26.aux.descripcion_ambito,
-              tipo_ambito_crear: _this26.aux.tipo_ambito
+              tipo_ambito_usuario: _this25.aux.tipo_ambito,
+              descripcion_ambito_usuario: _this25.aux.descripcion_ambito,
+              tipo_ambito_crear: _this25.aux.tipo_ambito
             };
 
-            _this26.authService.getDescripcionAmbito(datos).subscribe(function (datos) {
-              _this26.descripcionAmbito = datos;
+            _this25.authService.getDescripcionAmbito(datos).subscribe(function (datos) {
+              _this25.descripcionAmbito = datos;
 
-              _this26.authService.getRoles(_this26.datos).subscribe(function (roles) {
-                _this26.roles = roles;
+              _this25.authService.getRoles(_this25.datos).subscribe(function (roles) {
+                _this25.roles = roles;
               });
             });
           });
@@ -4106,10 +4090,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "obtenerRoles",
         value: function obtenerRoles() {
-          var _this27 = this;
+          var _this26 = this;
 
           this.authService.getRoles(this.datos).subscribe(function (roles) {
-            _this27.roles = roles;
+            _this26.roles = roles;
           });
         }
       }, {
@@ -4204,7 +4188,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "devuelveDescripcionAmbito",
         value: function devuelveDescripcionAmbito() {
-          var _this28 = this;
+          var _this27 = this;
 
           var dato = {
             tipo_ambito_usuario: this.aux.tipo_ambito,
@@ -4212,43 +4196,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             tipo_ambito_crear: this.user.tipo_ambito
           };
           this.authService.getDescripcionAmbito(dato).subscribe(function (datos) {
-            _this28.descripcionAmbito = datos;
-            _this28.datos.tipo_ambito_crear = _this28.user.tipo_ambito;
-            _this28.rolesAsignados = '';
-            _this28.rolesRemovidos = '';
-            _this28.datos.roles_asignados = '';
-            _this28.roles_seleccionados = [];
+            _this27.descripcionAmbito = datos;
+            _this27.datos.tipo_ambito_crear = _this27.user.tipo_ambito;
+            _this27.rolesAsignados = '';
+            _this27.rolesRemovidos = '';
+            _this27.datos.roles_asignados = '';
+            _this27.roles_seleccionados = [];
 
-            _this28.obtenerRoles();
+            _this27.obtenerRoles();
           });
         }
       }, {
         key: "validaDni",
         value: function validaDni() {
-          var _this29 = this;
+          var _this28 = this;
 
           var dato = {
             dni: this.user.dni
           };
           this.authService.validarDni(dato).subscribe(function (datos) {
-            _this29.datosPersonales = datos;
-            _this29.user.apellido_paterno = _this29.datosPersonales[0].APELLIDO_PATERNO;
-            _this29.user.apellido_materno = _this29.datosPersonales[0].APELLIDO_MATERNO;
-            _this29.user.nombres = _this29.datosPersonales[0].NOMBRES;
+            _this28.datosPersonales = datos;
+            _this28.user.apellido_paterno = _this28.datosPersonales[0].APELLIDO_PATERNO;
+            _this28.user.apellido_materno = _this28.datosPersonales[0].APELLIDO_MATERNO;
+            _this28.user.nombres = _this28.datosPersonales[0].NOMBRES;
           }, function (res) {
-            _this29.user.dni = '';
-            _this29.user.apellido_paterno = '';
-            _this29.user.apellido_materno = '';
-            _this29.user.nombres = '';
-            _this29.msgError = res.error.message;
+            _this28.user.dni = '';
+            _this28.user.apellido_paterno = '';
+            _this28.user.apellido_materno = '';
+            _this28.user.nombres = '';
+            _this28.msgError = res.error.message;
 
-            _this29.onIsError();
+            _this28.onIsError();
           });
         }
       }, {
         key: "onRegister",
         value: function onRegister(form) {
-          var _this30 = this;
+          var _this29 = this;
 
           if (form.valid) {
             this.user.password = this.user.dni;
@@ -4258,17 +4242,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.user.roles_asignados = this.rolesAsignados;
             this.user.roles_removidos = this.rolesRemovidos;
             this.authService.registerUser(this.user).subscribe(function (user) {
-              _this30.roles_seleccionados = [];
+              _this29.roles_seleccionados = [];
               document.getElementById("nav-home-tab").click();
-              _this30.msgSuccess = "EL USUARIO HA SIDO CREADO";
+              _this29.msgSuccess = "EL USUARIO HA SIDO CREADO";
 
-              _this30.onMsgSuccess();
+              _this29.onMsgSuccess();
 
-              _this30.ngOnInit();
+              _this29.ngOnInit();
             }, function (res) {
-              _this30.msgError = res.error.message;
+              _this29.msgError = res.error.message;
 
-              _this30.onIsError();
+              _this29.onIsError();
             });
           } else {
             this.onIsError();
@@ -4292,21 +4276,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "onIsError",
         value: function onIsError() {
-          var _this31 = this;
+          var _this30 = this;
 
           this.isError = true;
           setTimeout(function () {
-            _this31.isError = false;
+            _this30.isError = false;
           }, 3000);
         }
       }, {
         key: "onMsgSuccess",
         value: function onMsgSuccess() {
-          var _this32 = this;
+          var _this31 = this;
 
           this.isSuccess = true;
           setTimeout(function () {
-            _this32.isSuccess = false;
+            _this31.isSuccess = false;
           }, 3000);
         }
       }]);
@@ -5723,7 +5707,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "login",
         value: function login(user) {
-          var _this33 = this;
+          var _this32 = this;
 
           return this.httpClient.post("".concat(this.AUTH_SERVER, "/login"), user, {
             headers: this.headers
@@ -5741,22 +5725,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 estado: res.dataUser.estado
               };
 
-              _this33.setCurrentUser(currentuser);
+              _this32.setCurrentUser(currentuser);
 
-              _this33.saveRoles(res.roles); //GUARDAR TOKEN
+              _this32.saveRoles(res.roles); //GUARDAR TOKEN
 
 
-              _this33.saveToken({
+              _this32.saveToken({
                 accessToken: res.dataUser.accessToken,
                 expiresIn: res.dataUser.expiresIn
               });
-              /* if (res.dataUser.tipo_ambito == 'PUNTO') {
-                this.getIdPunto(res.dataUser.descripcion_ambito).subscribe(datos => {
-                  const idPunto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
-                  this.saveIdPunto(idPunto);
-                });
-              } */
 
+              if (res.dataUser.tipo_ambito == 'PUNTO') {
+                _this32.getIdPunto(res.dataUser.descripcion_ambito).subscribe(function (datos) {
+                  var idPunto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
+
+                  _this32.saveIdPunto(idPunto);
+                });
+              }
             }
           }));
         }
@@ -5768,8 +5753,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           localStorage.removeItem("ACCESS_TOKEN");
           localStorage.removeItem("EXPIRES_IN");
           localStorage.removeItem("CURRENT_USER");
-          /* localStorage.removeItem("ID_PUNTO"); */
-
+          localStorage.removeItem("ID_PUNTO");
           localStorage.removeItem("ROLES");
           return this.httpClient.post(url_api, {
             headers: this.headers
@@ -5780,6 +5764,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function setCurrentUser(user) {
           var user_string = JSON.stringify(user);
           localStorage.setItem("CURRENT_USER", user_string);
+          localStorage.removeItem("pun");
+          localStorage.removeItem("punto");
         }
       }, {
         key: "getCurrentUser",
@@ -5820,10 +5806,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           localStorage.setItem("EXPIRES_IN", expiresIn);
           this.token = accessToken;
         }
-        /* saveIdPunto(idPunto: string): void {
+      }, {
+        key: "saveIdPunto",
+        value: function saveIdPunto(idPunto) {
           localStorage.setItem("ID_PUNTO", idPunto);
-        } */
-
+        }
       }, {
         key: "getToken",
         value: function getToken() {
@@ -5973,49 +5960,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var _configuracion_configuracion__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
     /*! ../configuracion/configuracion */
     "./src/app/configuracion/configuracion.ts");
-    /* harmony import */
-
-
-    var src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
-    /*! src/app/servicios/auth.service */
-    "./src/app/servicios/auth.service.ts");
 
     var ControlCalidadService =
     /*#__PURE__*/
     function () {
-      function ControlCalidadService(http, authService) {
-        var _this34 = this;
-
+      function ControlCalidadService(http) {
         _classCallCheck(this, ControlCalidadService);
 
         this.http = http;
-        this.authService = authService;
         this.punto = '';
-        this.aux = this.authService.getCurrentUser();
         this.conf = new _configuracion_configuracion__WEBPACK_IMPORTED_MODULE_3__["Configuracion"]();
-        this.authService.getIdPunto(this.aux.descripcion_ambito).subscribe(function (datos) {
-          _this34.punto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
-        });
       }
 
       _createClass(ControlCalidadService, [{
         key: "ejecutarcontrol",
         value: function ejecutarcontrol(ano, mes) {
+          this.punto = localStorage.getItem("ID_PUNTO");
           return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + this.punto + '/ano/' + ano + '/mes/' + mes + '/nivel/4'); //this.http.get(this.conf.urlgenerarexcelcc+'punto/'+localStorage.getItem('pun')+'/ano/'+ano+'/mes/'+mes);
         }
       }, {
         key: "leercontrol",
         value: function leercontrol(ano, mes) {
+          this.punto = localStorage.getItem("ID_PUNTO");
           return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + this.punto + '/ano/' + ano + '/mes/' + mes);
         }
       }, {
         key: "ejecutarcontrol2",
         value: function ejecutarcontrol2() {
+          this.punto = localStorage.getItem("ID_PUNTO");
           return this.http.get(this.conf.urlsimple + 'controlcalidadhis/leercontrol2/' + this.punto);
         }
       }, {
         key: "descargarReporteCon2",
         value: function descargarReporteCon2() {
+          this.punto = localStorage.getItem("ID_PUNTO");
           return this.http.get(this.conf.urlsimple + 'download/file/' + this.punto + '/reporte2cc.xlsx', {
             responseType: 'arraybuffer'
           });
@@ -6031,8 +6009,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     ControlCalidadService.ctorParameters = function () {
       return [{
         type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]
-      }, {
-        type: src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"]
       }];
     };
 

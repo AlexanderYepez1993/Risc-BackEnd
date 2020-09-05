@@ -862,8 +862,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm2015/router.js");
 /* harmony import */ var src_app_servicios_control_calidad_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/servicios/control-calidad.service */ "./src/app/servicios/control-calidad.service.ts");
 /* harmony import */ var src_app_servicios_columnascc_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! src/app/servicios/columnascc.service */ "./src/app/servicios/columnascc.service.ts");
-/* harmony import */ var src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! src/app/servicios/auth.service */ "./src/app/servicios/auth.service.ts");
-
 
 
 
@@ -872,11 +870,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 let CargasHisComponent = class CargasHisComponent {
-    constructor(mensajes, rout, controlhis, authService, colmnas) {
+    constructor(mensajes, rout, controlhis, colmnas) {
         this.mensajes = mensajes;
         this.rout = rout;
         this.controlhis = controlhis;
-        this.authService = authService;
         this.colmnas = colmnas;
         this.punto = '192';
         this.ano = '2020';
@@ -895,18 +892,13 @@ let CargasHisComponent = class CargasHisComponent {
         this.registrosRep = '0';
         this.registrosPerc = '0';
         this.config = new src_app_configuracion_configuracion__WEBPACK_IMPORTED_MODULE_2__["Configuracion"]();
-        this.aux = this.authService.getCurrentUser();
     }
-    ngOnInit() {
-        this.authService.getIdPunto(this.aux.descripcion_ambito).subscribe(datos => {
-            this.punto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
-        });
-    }
+    ngOnInit() { }
     /**
      * selecionarArchivo
      */
     seleccionarArchivo() {
-        /* this.punto = localStorage.getItem("ID_PUNTO"); */
+        this.punto = localStorage.getItem("ID_PUNTO");
         this.urlPac = this.config.url + 'paciente/punto/' + this.punto + '/ano/' + this.ano + '/mes/' + this.mes;
         this.urlPer = this.config.url + 'personal/punto/' + this.punto + '/ano/' + this.ano + '/mes/' + this.mes;
         this.urlReg = this.config.url + 'registrador/punto/' + this.punto + '/ano/' + this.ano + '/mes/' + this.mes;
@@ -1034,7 +1026,6 @@ CargasHisComponent.ctorParameters = () => [
     { type: primeng_api__WEBPACK_IMPORTED_MODULE_3__["MessageService"] },
     { type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["ActivatedRoute"] },
     { type: src_app_servicios_control_calidad_service__WEBPACK_IMPORTED_MODULE_5__["ControlCalidadService"] },
-    { type: src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_7__["AuthService"] },
     { type: src_app_servicios_columnascc_service__WEBPACK_IMPORTED_MODULE_6__["ColumnasccService"] }
 ];
 tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
@@ -3332,12 +3323,12 @@ let AuthService = class AuthService {
                     accessToken: res.dataUser.accessToken,
                     expiresIn: res.dataUser.expiresIn,
                 });
-                /* if (res.dataUser.tipo_ambito == 'PUNTO') {
-                  this.getIdPunto(res.dataUser.descripcion_ambito).subscribe(datos => {
-                    const idPunto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
-                    this.saveIdPunto(idPunto);
-                  });
-                } */
+                if (res.dataUser.tipo_ambito == 'PUNTO') {
+                    this.getIdPunto(res.dataUser.descripcion_ambito).subscribe(datos => {
+                        const idPunto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
+                        this.saveIdPunto(idPunto);
+                    });
+                }
             }
         }));
     }
@@ -3347,13 +3338,15 @@ let AuthService = class AuthService {
         localStorage.removeItem("ACCESS_TOKEN");
         localStorage.removeItem("EXPIRES_IN");
         localStorage.removeItem("CURRENT_USER");
-        /* localStorage.removeItem("ID_PUNTO"); */
+        localStorage.removeItem("ID_PUNTO");
         localStorage.removeItem("ROLES");
         return this.httpClient.post(url_api, { headers: this.headers });
     }
     setCurrentUser(user) {
         const user_string = JSON.stringify(user);
         localStorage.setItem("CURRENT_USER", user_string);
+        localStorage.removeItem("pun");
+        localStorage.removeItem("punto");
     }
     getCurrentUser() {
         let user_string = localStorage.getItem("CURRENT_USER");
@@ -3384,9 +3377,9 @@ let AuthService = class AuthService {
         localStorage.setItem("EXPIRES_IN", expiresIn);
         this.token = accessToken;
     }
-    /* saveIdPunto(idPunto: string): void {
-      localStorage.setItem("ID_PUNTO", idPunto);
-    } */
+    saveIdPunto(idPunto) {
+        localStorage.setItem("ID_PUNTO", idPunto);
+    }
     getToken() {
         if (!this.token) {
             this.token = localStorage.getItem("ACCESS_TOKEN");
@@ -3463,43 +3456,39 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm2015/http.js");
 /* harmony import */ var _configuracion_configuracion__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../configuracion/configuracion */ "./src/app/configuracion/configuracion.ts");
-/* harmony import */ var src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/servicios/auth.service */ "./src/app/servicios/auth.service.ts");
-
 
 
 
 
 let ControlCalidadService = class ControlCalidadService {
-    constructor(http, authService) {
+    constructor(http) {
         this.http = http;
-        this.authService = authService;
         this.punto = '';
-        this.aux = this.authService.getCurrentUser();
         this.conf = new _configuracion_configuracion__WEBPACK_IMPORTED_MODULE_3__["Configuracion"]();
-        this.authService.getIdPunto(this.aux.descripcion_ambito).subscribe(datos => {
-            this.punto = JSON.parse(datos[0].ID_PUNTO_DIG_HIS);
-        });
     }
     ejecutarcontrol(ano, mes) {
+        this.punto = localStorage.getItem("ID_PUNTO");
         return this.http.get(this.conf.urlsimple + 'controlcalidadhis/punto/' + this.punto + '/ano/' + ano + '/mes/' + mes + '/nivel/4');
         //this.http.get(this.conf.urlgenerarexcelcc+'punto/'+localStorage.getItem('pun')+'/ano/'+ano+'/mes/'+mes);
     }
     ;
     leercontrol(ano, mes) {
+        this.punto = localStorage.getItem("ID_PUNTO");
         return this.http.get(this.conf.urlsimple + 'leercontrol/' + 'punto/' + this.punto + '/ano/' + ano + '/mes/' + mes);
     }
     ejecutarcontrol2() {
+        this.punto = localStorage.getItem("ID_PUNTO");
         return this.http.get(this.conf.urlsimple + 'controlcalidadhis/leercontrol2/' + this.punto);
     }
     descargarReporteCon2() {
+        this.punto = localStorage.getItem("ID_PUNTO");
         return this.http.get(this.conf.urlsimple + 'download/file/' + this.punto + '/reporte2cc.xlsx', { responseType: 'arraybuffer' });
     }
     descargarReporteCC(cod_ambito) {
     }
 };
 ControlCalidadService.ctorParameters = () => [
-    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] },
-    { type: src_app_servicios_auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"] }
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] }
 ];
 ControlCalidadService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
